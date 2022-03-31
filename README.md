@@ -4,7 +4,11 @@
 
 ![Downloads](https://img.shields.io/npm/dw/dotenv-ng?style=flat-square) ![Version@npm](https://img.shields.io/npm/v/dotenv-ng?label=version%40npm&style=flat-square) ![Version@git](https://img.shields.io/github/package-json/v/szikszail/dotenv-ng/main?label=version%40git&style=flat-square) ![CI](https://img.shields.io/github/workflow/status/szikszail/dotenv-ng/CI/main?label=ci&style=flat-square) ![Docs](https://img.shields.io/github/workflow/status/szikszail/dotenv-ng/Docs/main?label=docs&style=flat-square)
 
-This repository/project is a template/placeholder for new NPM packages.
+This tool is a custom implementation to handle `.env` files, inspired by [dotenv (NPM)](https://www.npmjs.com/package/dotenv) and [python-dotenv (PyPi)](https://pypi.org/project/python-dotenv/), including features like:
+ - Handling simple `.env` file
+ - Handling environment variables in `.env` files
+ - Handling `.env` file hierarchy
+ - ...
 
 ## Usage
 
