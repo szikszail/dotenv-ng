@@ -1,6 +1,6 @@
 import debug = require("debug");
 
-const log = debug("npm-package");
+const log = debug("xdotenv");
 
 export function noop() {
   log("noop");

@@ -1,6 +1,6 @@
 import { noop } from "../src";
 
-describe("npm-package", () => {
+describe("xdotenv", () => {
   test("should do noop", () => {
     noop();
   });
