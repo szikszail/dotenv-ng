@@ -4,4 +4,4 @@
 
 ### Added
 
-- Implemented xdotenv
+- Implemented dotenv-ng

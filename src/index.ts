@@ -1,6 +1,6 @@
 import debug = require("debug");
 
-const log = debug("xdotenv");
+const log = debug("dotenv-ng");
 
 export function noop() {
   log("noop");

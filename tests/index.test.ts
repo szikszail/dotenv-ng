@@ -1,6 +1,6 @@
 import { noop } from "../src";
 
-describe("xdotenv", () => {
+describe("dotenv-ng", () => {
   test("should do noop", () => {
     noop();
   });

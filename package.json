@@ -1,5 +1,5 @@
 {
-  "name": "xdotenv",
+  "name": "dotenv-ng",
   "version": "0.0.1",
   "description": "This repository/project is a template/placeholder for new NPM packages.",
   "main": "index.js",
@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/szikszail/xdotenv.git"
+    "url": "git+https://github.com/szikszail/dotenv-ng.git"
   },
   "keywords": [],
   "author": "Laszlo Szikszai <sziklaszlo@gmail.com>",
@@ -30,9 +30,9 @@
     "node": ">=12.0.0"
   },
   "bugs": {
-    "url": "https://github.com/szikszail/xdotenv/issues"
+    "url": "https://github.com/szikszail/dotenv-ng/issues"
   },
-  "homepage": "https://github.com/szikszail/xdotenv#readme",
+  "homepage": "https://github.com/szikszail/dotenv-ng#readme",
   "devDependencies": {
     "@types/debug": "^4.1.5",
     "@types/jest": "^26.0.20",
