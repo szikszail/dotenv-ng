@@ -1,4 +1,4 @@
-> **IMPORTANT** this is just a placeholder for the actual package release later (v1.0.0)
+> **IMPORTANT** This pacakge is <font coloe="red">Work In Progress</font>, it is just a placeholder for the actual package release later (v1.0.0)
 
 # dotenv-ng
 
@@ -14,7 +14,7 @@ This tool is a custom implementation to handle `.env` files, inspired by [dotenv
 
 ### Environment files
 
-You can define a `.env` file, containing configuration, environment variables, with
+You can define a `.env` file containing configuration, environment variables, with
  - Simple number, string, boolean values
  - Comments
  - Environment variables interpolation
@@ -24,7 +24,7 @@ You can define a `.env` file, containing configuration, environment variables, w
 # This is an environment file (simplified)
 export EXPORTED_VARIABLE=simple value # this will be a string
 export OTHER_EXPORTED_VARIABLE=123 # this will be a number
-# You can leave export statement and set
+# You can leave the export statement and set
 # just key-value pairs
 SIMPLE_STRING_VARIABLE = "hello world" # string can be also set in quotes
 OTHER_STRING_VARIABLE = 'hello world' # or apostrophes
@@ -42,9 +42,9 @@ INTERPOLATED_WITH_SYSVARS = "system temp: ${TMP}" # use environment variables
 # for environment variables (CAPITALS with _)
 # but others will work as well
 this is also an environment variable = "with this value"
-# This lines are ignored, without =, or without key
+# These lines are ignored, without =, or without key
 THIS_WILL_BE_IGNORED
-="this as well"
+="this as well."
 # This will be an empty variable (empty string)
 EMPTY_VARIABLE=
 # Special values are also supported
@@ -52,7 +52,7 @@ NULL_VARIABLE=null
 OTHER_NULL_VARIABLE=NULL
 UNDEFINED_VARIABLE=undefined
 OTHER_UNDEFINED_VARIABLE=UNDEFINED
-LITERAL_NULL_VARIABLE="null" # to use these special values as string, set them as string
+LITERAL_NULL_VARIABLE="null" # to use these particular values as strings set them as a string
 ```
 
 ### Parsing
@@ -142,25 +142,25 @@ load(".env", { overwriteExisting: true })
 
 `parse` (and other functions such as `load` and `values`) accepts an optional configuration to adjust parsing logic:
 
-| Option                            | Type      | Description                                                                                                            | Default |
-| :-------------------------------- | :-------- | :--------------------------------------------------------------------------------------------------------------------- | :------ |
-| `ingoreLiteralCase`               | `boolean` | Should the casing of special literals (e.g. `true`, `false`, `null`, `undefined`) be ignored.                          | `true`  |
-| `parseLiterals`                   | `boolean` | Should special literals be parsed as their JS values (e.g. `true`, `false`, `null`, `undefined`) or parsed as strings. | `true`  |
-| `parseNumbers`                    | `boolean` | Should number literals be parsed as numbers or parsed as strings.                                                      | `true`  |
-| `allowEmptyVariables`             | `boolean` | Should empty variables (without a values set) be allowed.                                                              | `true`  |
-| `allowOrphanKeys`                 | `boolean` | Should orphan keys be allowed (line 24) or parsed as empty variables.                                                  | `false` |
-| `interpolationEnabled`            | `boolean` | Should string interpolation evaluated for other environment variables or handled as literal strings.                   | `true`  |
-| `overwriteExisting` (only for `load`) | `boolean` | Should the existing environment variable values be overwritten.                                                        | `false` |
-| `environment`                     | `string`  | The environment specific environment file to be loaded, if a folder is processed.                                      | -       |
+| Option                                | Type      | Description                                                                                                                   | Default |
+| :------------------------------------ | :-------- | :---------------------------------------------------------------------------------------------------------------------------- | :------ |
+| `ingoreLiteralCase`                   | `boolean` | Should the casing of special literals (e.g. `true`, `false`, `null`, `undefined`, `NaN`) be ignored.                          | `true`  |
+| `parseLiterals`                       | `boolean` | Should special literals be parsed as their JS values (e.g. `true`, `false`, `null`, `undefined`, `NaN`) or parsed as strings. | `true`  |
+| `parseNumbers`                        | `boolean` | Should number literals be parsed as numbers or parsed as strings.                                                             | `true`  |
+| `allowEmptyVariables`                 | `boolean` | Should empty variables (without a values set) be allowed.                                                                     | `true`  |
+| `allowOrphanKeys`                     | `boolean` | Should orphan keys be allowed (line 24) or parsed as empty variables.                                                         | `false` |
+| `interpolationEnabled`                | `boolean` | Should string interpolation evaluated for other environment variables or handled as literal strings.                          | `true`  |
+| `overwriteExisting` (only for `load`) | `boolean` | Should the existing environment variable values be overwritten.                                                               | `false` |
+| `environment`                         | `string`  | The environment specific environment file to be loaded, if a folder is processed.                                             | -       |
 
-All functions fill process the `.env` (or folder containing `.env` files) path and accepts the configuration mentioned previously.
-- If no path passed to the function, the `.env` file in the current working directory will be processed
+All functions process the `.env` (or folder containing `.env` files) path and accept the configuration mentioned previously.
+- If no path is passed to the function, the `.env` file in the current working directory will be processed
 - If a path to an environment file is passed to the function, that environment file is processed
-- If a path to a folder (that contains environment files) is passed to the function, all `.env*` files are processed and the combined results are returned.
-  The precendence of loading and combination is:
-  1. Default environment file (`.env`) if exists
-  2. Environment specific environment file (e.g. `.env.development`) if set in the options and exists
-  3. Local environment file (`.env.local`) if exsits
+- If a path to a folder (that contains environment files) is passed to the function, all `.env*` files are processed, and the combined results are returned.
+  The precedence of loading and combination is:
+  1. Default environment file (`.env`), if it exists
+  2. Environment specific environment file (e.g. `.env.development`), if set in the options and exists
+  3. Local environment file (`.env.local`), if it exists
 
 ## Other
 
