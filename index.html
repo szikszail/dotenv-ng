@@ -9,21 +9,131 @@
 <p>This tool is a custom implementation to handle <code>.env</code> files, inspired by <a href="https://www.npmjs.com/package/dotenv">dotenv (NPM)</a> and <a href="https://pypi.org/project/python-dotenv/">python-dotenv (PyPi)</a>, including features like:</p>
 <ul>
 <li>Handling simple <code>.env</code> file</li>
-<li>Handling environment variables in <code>.env</code> files</li>
-<li>Handling <code>.env</code> file hierarchy</li>
-<li>...</li>
+<li>Handling environment variable interpolation</li>
+<li>Handling file hierarchy</li>
+<li>Handling JavaScript literals</li>
 </ul>
 
 <a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
   <h2>Usage</h2>
 </a>
-<p><code>TODO</code></p>
+
+<a href="#environment-files" id="environment-files" style="color: inherit; text-decoration: none;">
+  <h3>Environment files</h3>
+</a>
+<p>You can define a <code>.env</code> file, containing configuration, environment variables, with</p>
+<ul>
+<li>Simple number, string, boolean values</li>
+<li>Comments</li>
+<li>Environment variables interpolation</li>
+</ul>
+<pre><code class="language-sh"><span class="hl-0"># .env</span><br/><span class="hl-0"># This is an environment file (simplified)</span><br/><span class="hl-1">export</span><span class="hl-2"> EXPORTED_VARIABLE=simple value </span><span class="hl-0"># this will be a string</span><br/><span class="hl-1">export</span><span class="hl-2"> OTHER_EXPORTED_VARIABLE=123 </span><span class="hl-0"># this will be a number</span><br/><span class="hl-0"># You can leave export statement and set</span><br/><span class="hl-0"># just key-value pairs</span><br/><span class="hl-2">SIMPLE_STRING_VARIABLE = </span><span class="hl-3">&quot;hello world&quot;</span><span class="hl-2"> </span><span class="hl-0"># string can be also set in quotes</span><br/><span class="hl-2">OTHER_STRING_VARIABLE = </span><span class="hl-3">&#39;hello world&#39;</span><span class="hl-2"> </span><span class="hl-0"># or apostrophes</span><br/><span class="hl-2">SIMPLE_NUMBER_VARIABLE = 1</span><br/><span class="hl-0"># Boolean variables can have true,false values</span><br/><span class="hl-2">SIMPLE_BOOLEAN_VARIABLE = </span><span class="hl-4">false</span><br/><span class="hl-2">OTHER_BOOLEAN_VARIABLE = </span><span class="hl-4">true</span><br/><span class="hl-2">OTHER_CASE_BOOLEAN_VARIABLE = TRUE</span><br/><span class="hl-0"># String interpolation will also wrok</span><br/><span class="hl-0"># with the ${KEY} format</span><br/><span class="hl-2">INTERPOLATED_VARIABLE = </span><span class="hl-3">&quot;this is also </span><span class="hl-5">${SIMPLE_STRING_VARIABLE}</span><span class="hl-3">&quot;</span><br/><span class="hl-2">OTHER_BUT_NOT_INTERPOLATED = </span><span class="hl-3">&quot;this won&#39;t work </span><span class="hl-5">$SIMPLE_STRING_VARIABLE</span><span class="hl-3"> (for now)&quot;</span><span class="hl-2"> </span><span class="hl-0"># this won&#39;t work yet</span><br/><span class="hl-2">INTERPOLATED_WITH_SYSVARS = </span><span class="hl-3">&quot;system temp: </span><span class="hl-5">${TMP}</span><span class="hl-3">&quot;</span><span class="hl-2"> </span><span class="hl-0"># use environment variables</span><br/><span class="hl-0"># We suggest following the standard naming conventions</span><br/><span class="hl-0"># for environment variables (CAPITALS with _)</span><br/><span class="hl-0"># but others will work as well</span><br/><span class="hl-2">this is also an environment variable = </span><span class="hl-3">&quot;with this value&quot;</span><br/><span class="hl-0"># This lines are ignored, without =, or without key</span><br/><span class="hl-2">THIS_WILL_BE_IGNORED</span><br/><span class="hl-2">=</span><span class="hl-3">&quot;this as well&quot;</span><br/><span class="hl-0"># This will be an empty variable (empty string)</span><br/><span class="hl-2">EMPTY_VARIABLE=</span><br/><span class="hl-0"># Special values are also supported</span><br/><span class="hl-2">NULL_VARIABLE=null</span><br/><span class="hl-2">OTHER_NULL_VARIABLE=NULL</span><br/><span class="hl-2">UNDEFINED_VARIABLE=undefined</span><br/><span class="hl-2">OTHER_UNDEFINED_VARIABLE=UNDEFINED</span><br/><span class="hl-2">LITERAL_NULL_VARIABLE=</span><span class="hl-3">&quot;null&quot;</span><span class="hl-2"> </span><span class="hl-0"># to use these special values as string, set them as string</span>
+</code></pre>
+
+<a href="#parsing" id="parsing" style="color: inherit; text-decoration: none;">
+  <h3>Parsing</h3>
+</a>
+<p>An environment file can be parsed with the <code>parse</code> function. This will parse the valid values and the parsing errors as well.</p>
+<pre><code class="language-typescript"><span class="hl-6">import</span><span class="hl-2"> { </span><span class="hl-5">parse</span><span class="hl-2"> } </span><span class="hl-6">from</span><span class="hl-2"> </span><span class="hl-3">&quot;dotenv-ng&quot;</span><br/><br/><span class="hl-1">const</span><span class="hl-2"> </span><span class="hl-7">results</span><span class="hl-2"> = </span><span class="hl-4">parse</span><span class="hl-2">(</span><span class="hl-3">&quot;.env&quot;</span><span class="hl-2">)</span><br/><span class="hl-5">console</span><span class="hl-2">.</span><span class="hl-4">log</span><span class="hl-2">(</span><span class="hl-5">results</span><span class="hl-2">.</span><span class="hl-5">data</span><span class="hl-2">);</span><br/><span class="hl-0">// {</span><br/><span class="hl-0">//   &quot;EXPORTED_VARIABLE&quot;: &quot;simple value&quot;,</span><br/><span class="hl-0">//   &quot;OTHER_EXPORTED_VARIABLE&quot;: 123,</span><br/><span class="hl-0">//   &quot;SIMPLE_STRING_VARIABLE&quot;: &quot;hello world&quot;,</span><br/><span class="hl-0">//   &quot;OTHER_STRING_VARIABLE&quot;: &quot;hello world&quot;,</span><br/><span class="hl-0">//   &quot;SIMPLE_NUMBER_VARIABLE&quot;: 1,</span><br/><span class="hl-0">//   &quot;SIMPLE_BOOLEAN_VARIABLE&quot;: false,</span><br/><span class="hl-0">//   &quot;OTHER_BOOLEAN_VARIABLE&quot;: true,</span><br/><span class="hl-0">//   &quot;OTHER_CASE_BOOLEAN_VARIABLE&quot;: true,</span><br/><span class="hl-0">//   &quot;INTERPOLATE_VARIABLE&quot;: &quot;this is also hello world&quot;,</span><br/><span class="hl-0">//   &quot;OTHER_BUT_NOT_INTERPOLATED&quot;: &quot;this won&#39;t work $SIMPLE_STRING_VARIABLE (for now)&quot;,</span><br/><span class="hl-0">//   &quot;INTERPOLATED_WITH_SYSVARS&quot;: &quot;sytem temp: C:\\WINDOWS\\TEMP&quot;,</span><br/><span class="hl-0">//   &quot;this is also an environment variable&quot;: &quot;with this value&quot;,</span><br/><span class="hl-0">//   &quot;EMPTY_VARIABLE&quot;: &quot;&quot;,</span><br/><span class="hl-0">//   &quot;NULL_VARIABLE&quot;: null,</span><br/><span class="hl-0">//   &quot;OTHER_NULL_VARIABLE&quot;: null,</span><br/><span class="hl-0">//   &quot;UNDEFINED_VARIABLE&quot;: undefined,</span><br/><span class="hl-0">//   &quot;OTHER_UNDERFINED_VARIABLE: undefined,</span><br/><span class="hl-0">//   &quot;LITERAL_NULL_VARIABLE&quot;: &quot;null&quot;</span><br/><span class="hl-0">// }</span><br/><br/><span class="hl-5">console</span><span class="hl-2">.</span><span class="hl-4">log</span><span class="hl-2">(</span><span class="hl-5">results</span><span class="hl-2">.</span><span class="hl-5">errors</span><span class="hl-2">);</span><br/><span class="hl-0">// [</span><br/><span class="hl-0">//   { &quot;line&quot;: 24, &quot;error&quot;: &quot;ORPHAN_KEY&quot;, &quot;data&quot;: &quot;THIS_WILL_BE_IGNORED&quot; },</span><br/><span class="hl-0">//   { &quot;line&quot;: 25, &quot;error&quot;: &quot;MISSING_KEY&quot;, &quot;data&quot;: &quot;=\&quot;this as well\&quot;&quot; }</span><br/><span class="hl-0">// ]</span>
+</code></pre>
+
+<a href="#values" id="values" style="color: inherit; text-decoration: none;">
+  <h3>Values</h3>
+</a>
+<p>To retrieve the valid, parsed values, you can use the <code>values</code> function:</p>
+<pre><code class="language-typescript"><span class="hl-6">import</span><span class="hl-2"> { </span><span class="hl-5">values</span><span class="hl-2"> } </span><span class="hl-6">from</span><span class="hl-2"> </span><span class="hl-3">&quot;dotenv-ng&quot;</span><span class="hl-2">;</span><br/><br/><span class="hl-1">const</span><span class="hl-2"> </span><span class="hl-7">v</span><span class="hl-2"> = </span><span class="hl-4">values</span><span class="hl-2">(</span><span class="hl-3">&quot;.env&quot;</span><span class="hl-2">)</span><br/><span class="hl-5">console</span><span class="hl-2">.</span><span class="hl-4">log</span><span class="hl-2">(</span><span class="hl-5">v</span><span class="hl-2">);</span><br/><br/><span class="hl-0">// {</span><br/><span class="hl-0">//   &quot;EXPORTED_VARIABLE&quot;: &quot;simple value&quot;,</span><br/><span class="hl-0">//   &quot;OTHER_EXPORTED_VARIABLE&quot;: 123,</span><br/><span class="hl-0">//   ...</span><br/><span class="hl-0">//   &quot;OTHER_UNDERFINED_VARIABLE: undefined,</span><br/><span class="hl-0">//   &quot;LITERAL_NULL_VARIABLE&quot;: &quot;null&quot;</span><br/><span class="hl-0">// }</span>
+</code></pre>
+
+<a href="#updating-environment-variables" id="updating-environment-variables" style="color: inherit; text-decoration: none;">
+  <h3>Updating environment variables</h3>
+</a>
+<p>To update the environment variables in the scripts context (<code>process.env</code>), you can use the <code>load</code> function:</p>
+<pre><code class="language-typescript"><span class="hl-6">import</span><span class="hl-2"> { </span><span class="hl-5">load</span><span class="hl-2"> } </span><span class="hl-6">from</span><span class="hl-2"> </span><span class="hl-3">&quot;dotenv-ng&quot;</span><span class="hl-2">;</span><br/><br/><span class="hl-4">load</span><span class="hl-2">(</span><span class="hl-3">&quot;.env&quot;</span><span class="hl-2">);</span><br/><span class="hl-5">console</span><span class="hl-2">.</span><span class="hl-4">log</span><span class="hl-2">(</span><span class="hl-5">process</span><span class="hl-2">.</span><span class="hl-5">env</span><span class="hl-2">);</span><br/><br/><span class="hl-0">// {</span><br/><span class="hl-0">//   ...</span><br/><span class="hl-0">//   &quot;EXPORTED_VARIABLE&quot;: &quot;simple value&quot;,</span><br/><span class="hl-0">//   &quot;OTHER_EXPORTED_VARIABLE&quot;: 123,</span><br/><span class="hl-0">//   ...</span><br/><span class="hl-0">//   &quot;OTHER_UNDERFINED_VARIABLE: undefined,</span><br/><span class="hl-0">//   &quot;LITERAL_NULL_VARIABLE&quot;: &quot;null&quot;</span><br/><span class="hl-0">//   ...</span><br/><span class="hl-0">// }</span>
+</code></pre>
+<p>By default, <code>load</code> won&#39;t overwrite the existing environment variables, to enable it set the <code>overwriteExisting: boolean</code> configuration option:</p>
+<pre><code class="language-typescript"><span class="hl-4">load</span><span class="hl-2">(</span><span class="hl-3">&quot;.env&quot;</span><span class="hl-2">, { </span><span class="hl-5">overwriteExisting:</span><span class="hl-2"> </span><span class="hl-1">true</span><span class="hl-2"> })</span>
+</code></pre>
+
+<a href="#configuration" id="configuration" style="color: inherit; text-decoration: none;">
+  <h3>Configuration</h3>
+</a>
+<p><code>parse</code> (and other functions such as <code>load</code> and <code>values</code>) accepts an optional configuration to adjust parsing logic:</p>
+<table>
+<thead>
+<tr>
+<th align="left">Option</th>
+<th align="left">Type</th>
+<th align="left">Description</th>
+<th align="left">Default</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>ingoreLiteralCase</code></td>
+<td align="left"><code>boolean</code></td>
+<td align="left">Should the casing of special literals (e.g. <code>true</code>, <code>false</code>, <code>null</code>, <code>undefined</code>) be ignored.</td>
+<td align="left"><code>true</code></td>
+</tr>
+<tr>
+<td align="left"><code>parseLiterals</code></td>
+<td align="left"><code>boolean</code></td>
+<td align="left">Should special literals be parsed as their JS values (e.g. <code>true</code>, <code>false</code>, <code>null</code>, <code>undefined</code>) or parsed as strings.</td>
+<td align="left"><code>true</code></td>
+</tr>
+<tr>
+<td align="left"><code>parseNumbers</code></td>
+<td align="left"><code>boolean</code></td>
+<td align="left">Should number literals be parsed as numbers or parsed as strings.</td>
+<td align="left"><code>true</code></td>
+</tr>
+<tr>
+<td align="left"><code>allowEmptyVariables</code></td>
+<td align="left"><code>boolean</code></td>
+<td align="left">Should empty variables (without a values set) be allowed.</td>
+<td align="left"><code>true</code></td>
+</tr>
+<tr>
+<td align="left"><code>allowOrphanKeys</code></td>
+<td align="left"><code>boolean</code></td>
+<td align="left">Should orphan keys be allowed (line 24) or parsed as empty variables.</td>
+<td align="left"><code>false</code></td>
+</tr>
+<tr>
+<td align="left"><code>interpolationEnabled</code></td>
+<td align="left"><code>boolean</code></td>
+<td align="left">Should string interpolation evaluated for other environment variables or handled as literal strings.</td>
+<td align="left"><code>true</code></td>
+</tr>
+<tr>
+<td align="left"><code>overwriteExisting</code> (only for <code>load</code>)</td>
+<td align="left"><code>boolean</code></td>
+<td align="left">Should the existing environment variable values be overwritten.</td>
+<td align="left"><code>false</code></td>
+</tr>
+<tr>
+<td align="left"><code>environment</code></td>
+<td align="left"><code>string</code></td>
+<td align="left">The environment specific environment file to be loaded, if a folder is processed.</td>
+<td align="left">-</td>
+</tr>
+</tbody></table>
+<p>All functions fill process the <code>.env</code> (or folder containing <code>.env</code> files) path and accepts the configuration mentioned previously.</p>
+<ul>
+<li>If no path passed to the function, the <code>.env</code> file in the current working directory will be processed</li>
+<li>If a path to an environment file is passed to the function, that environment file is processed</li>
+<li>If a path to a folder (that contains environment files) is passed to the function, all <code>.env*</code> files are processed and the combined results are returned.
+The precendence of loading and combination is:<ol>
+<li>Default environment file (<code>.env</code>) if exists</li>
+<li>Environment specific environment file (e.g. <code>.env.development</code>) if set in the options and exists</li>
+<li>Local environment file (<code>.env.local</code>) if exsits</li>
+</ol>
+</li>
+</ul>
 
 <a href="#other" id="other" style="color: inherit; text-decoration: none;">
   <h2>Other</h2>
 </a>
 <p>For detailed documentation see the <a href="https://szikszail.github.io/dotenv-ng/">TypeDocs documentation</a>.</p>
 <p>This package uses <a href="https://www.npmjs.com/package/debug">debug</a> for logging, use <code>dotenv-ng</code> to see debug logs:</p>
-<pre><code class="language-shell"><span class="hl-0">DEBUG=dotenv-ng node my-script.js</span>
+<pre><code class="language-shell"><span class="hl-2">DEBUG=dotenv-ng node my-script.js</span>
 </code></pre>
 </div></div><div class="col-4 col-menu menu-sticky-wrap menu-highlight"><nav class="tsd-navigation primary"><ul><li class="current"><a href="modules.html">Exports</a></li></ul></nav><nav class="tsd-navigation secondary menu-sticky"><ul><li class="tsd-kind-function"><a href="modules.html#noop" class="tsd-kind-icon">noop</a></li></ul></nav></div></div></div><footer class="with-border-bottom"><div class="container"><h2>Settings</h2><p>Theme <select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></p></div></footer><div class="container tsd-generator"><p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div><div class="overlay"></div><script src="assets/main.js"></script></body></html>
