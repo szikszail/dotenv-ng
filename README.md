@@ -37,7 +37,7 @@ OTHER_CASE_BOOLEAN_VARIABLE = TRUE
 # with the ${KEY} format
 INTERPOLATED_VARIABLE = "this is also ${SIMPLE_STRING_VARIABLE}"
 OTHER_BUT_NOT_INTERPOLATED = "this won't work $SIMPLE_STRING_VARIABLE (for now)" # this won't work yet
-INTERPOLATED_WITH_SYSVARS = "system temp: ${TMP}" # use environment variables
+INTERPOLATED_WITH_SYSVARS = "system temp: ${JAVA_HOME}" # use environment variables
 # We suggest following the standard naming conventions
 # for environment variables (CAPITALS with _)
 # but others will work as well
