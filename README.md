@@ -142,16 +142,16 @@ load(".env", { overwriteExisting: true })
 
 `parse` (and other functions such as `load` and `values`) accepts an optional configuration to adjust parsing logic:
 
-| Option                                | Type      | Description                                                                                                                   | Default |
-| :------------------------------------ | :-------- | :---------------------------------------------------------------------------------------------------------------------------- | :------ |
-| `ingoreLiteralCase`                   | `boolean` | Should the casing of special literals (e.g. `true`, `false`, `null`, `undefined`, `NaN`) be ignored.                          | `true`  |
-| `parseLiterals`                       | `boolean` | Should special literals be parsed as their JS values (e.g. `true`, `false`, `null`, `undefined`, `NaN`) or parsed as strings. | `true`  |
-| `parseNumbers`                        | `boolean` | Should number literals be parsed as numbers or parsed as strings.                                                             | `true`  |
-| `allowEmptyVariables`                 | `boolean` | Should empty variables (without a values set) be allowed.                                                                     | `true`  |
-| `allowOrphanKeys`                     | `boolean` | Should orphan keys be allowed (line 24) or parsed as empty variables.                                                         | `false` |
-| `interpolationEnabled`                | `boolean` | Should string interpolation evaluated for other environment variables or handled as literal strings.                          | `true`  |
-| `overwriteExisting` (only for `load`) | `boolean` | Should the existing environment variable values be overwritten.                                                               | `false` |
-| `environment`                         | `string`  | The environment specific environment file to be loaded, if a folder is processed.                                             | -       |
+| Option                 | Type      | Description                                                                                                                   | Default |
+| :--------------------- | :-------- | :---------------------------------------------------------------------------------------------------------------------------- | :------ |
+| `ingoreLiteralCase`    | `boolean` | Should the casing of special literals (e.g. `true`, `false`, `null`, `undefined`, `NaN`) be ignored.                          | `true`  |
+| `parseLiterals`        | `boolean` | Should special literals be parsed as their JS values (e.g. `true`, `false`, `null`, `undefined`, `NaN`) or parsed as strings. | `true`  |
+| `parseNumbers`         | `boolean` | Should number literals be parsed as numbers or parsed as strings.                                                             | `true`  |
+| `allowEmptyVariables`  | `boolean` | Should empty variables (without a values set) be allowed.                                                                     | `true`  |
+| `allowOrphanKeys`      | `boolean` | Should orphan keys be allowed (line 24) or parsed as empty variables.                                                         | `false` |
+| `interpolationEnabled` | `boolean` | Should string interpolation evaluated for other environment variables or handled as literal strings.                          | `true`  |
+| `overwriteExisting`    | `boolean` | Should the existing environment variable values be overwritten.                                                               | `false` |
+| `environment`          | `string`  | The environment specific environment file to be loaded, if a folder is processed.                                             | -       |
 
 All functions process the `.env` (or folder containing `.env` files) path and accept the configuration mentioned previously.
 - If no path is passed to the function, the `.env` file in the current working directory will be processed

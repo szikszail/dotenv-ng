@@ -50,13 +50,18 @@ function prepareParameters<O extends DotEnvParseOptions>(path?: string | O, opti
   };
 }
 
+export function parseString(content: string, options?: DotEnvParseOptions): ParseResult {
+  parser.setOptions(options);
+  return parser.parseString(content);
+}
+
 export function parse(options?: DotEnvParseOptions): ParseResult;
 export function parse(path: string, options?: DotEnvParseOptions): ParseResult;
 export function parse(path?: string | DotEnvParseOptions, options?: DotEnvParseOptions): ParseResult {
   const { path: parsedPath, options: parsedOptions } = prepareParameters<DotEnvParseOptions>(path, options);
-  console.log({ parsedPath, parsedOptions });
+  // console.log({ parsedPath, parsedOptions });
   parser.setOptions(parsedOptions);
-  return parser.parseFile(parsedPath);
+  return parser.parse(parsedPath);
 }
 
 export function values<D extends ParsedData>(options?: DotEnvParseOptions): D;
@@ -72,5 +77,8 @@ export function load(path: string, options?: DotEnvLoadOptions): void;
 export function load(path?: string | DotEnvLoadOptions, options?: DotEnvLoadOptions): void {
   const { path: parsedPath, options: parsedOptions } = prepareParameters<DotEnvLoadOptions>(path, options);
   const v = values(parsedPath, parsedOptions);
-  console.log(v);
+  // @ts-ignore ENV can only contain string, but we can ignore it
+  process.env = parsedOptions.overwriteExisting
+    ? { ...process.env, ...v }
+    : { ...v, ...process.env };
 }
