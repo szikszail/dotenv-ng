@@ -1,6 +1,8 @@
 import { existsSync, statSync, readFileSync } from "fs";
-import { splitToLines } from "lines-builder";
 import { join } from "path";
+
+import debug = require("debug");
+const log = debug("dotenv-ng:parser");
 
 export interface DotEnvParseOptions {
   ignoreLiteralCase?: boolean;
@@ -51,12 +53,18 @@ interface ValueParserRule<T> {
   parse(value: string, options: DotEnvParseOptions): T;
 }
 
+function splitToLines(s: string): string[] {
+  return s.split(/\r?\n\r?/g);
+}
+
 class EmptyParserRule implements ValueParserRule<string> {
   condition(value: string): boolean {
+    log("EmptyParserRule:condition(value: %s)", value);
     return value === "";
   }
 
   parse(): string {
+    log("EmptyParserRule:parse()");
     return "";
   }
 }
@@ -65,15 +73,18 @@ class NumberParseRule implements ValueParserRule<number> {
   private static readonly NUMBER_LITERAL_SEPARATORS = /[_\s]/g;
 
   prepare(value: string): string {
+    log("NumberParseRule:prepare(value: %s)", value);
     return value.replace(NumberParseRule.NUMBER_LITERAL_SEPARATORS, "");
   }
 
   condition(value: string, options: DotEnvParseOptions): boolean {
+    log("NumberParseRule:condition(value: %s, options: %o)", value, options);
     const prepared = this.prepare(value);
     return options.parseNumbers && prepared && !isNaN(+prepared);
   }
 
   parse(value: string): number {
+    log("NumberParseRule:parse(value: %s)", value);
     return +this.prepare(value);
   }
 }
@@ -82,10 +93,12 @@ class StringLiteralParser implements ValueParserRule<string> {
   private static readonly STRING_LITERAL = /^(['"])(.*)\1$/;
 
   condition(value: string): boolean {
+    log("StringLiteralParser:condition(value: %s)", value);
     return StringLiteralParser.STRING_LITERAL.test(value);
   }
 
   parse(value: string): string {
+    log("StringLiteralParser:parse(value: %s)", value);
     return value.match(StringLiteralParser.STRING_LITERAL)[2];
   }
 }
@@ -101,14 +114,17 @@ class JSLiteralParser implements ValueParserRule<LiteralValue> {
   }
 
   prepare(value: string, options: DotEnvParseOptions): string {
+    log("JSLiteralParser:prepare(value: %s, options: %o)", value, options);
     return options.ignoreLiteralCase ? value.toLowerCase() : value;
   }
 
   condition(value: string, options: DotEnvParseOptions): boolean {
+    log("JSLiteralParser:condition(value: %s, options: %o)", value, options);
     return options.parseLiterals && this.prepare(value, options) in JSLiteralParser.JS_LITERALS;
   }
 
   parse(value: string, options: DotEnvParseOptions): LiteralValue {
+    log("JSLiteralParser:parse(value: %s, options: %o)", value, options);
     return JSLiteralParser.JS_LITERALS[this.prepare(value, options)];
   }
 }
@@ -126,6 +142,7 @@ export class EnvFileParser {
   private static readonly INTERPOLATION = /\$\{(.*?)\}/;
 
   public setOptions(options: DotEnvParseOptions): void {
+    log("setOptions(options: %o)", options);
     this.options = {
       ...DEFAULT_OPTIONS,
       ...options,
@@ -133,15 +150,22 @@ export class EnvFileParser {
   }
 
   private static isCommentLine(line: string): boolean {
+    log("isCommentLine(line: %s)", line);
     return EnvFileParser.COMMENT_LINE.test(line);
   }
   private static parseLine(line: string): ParsedLine {
     const [, key, assignment, value] = line.match(EnvFileParser.VARIABLE_LINE);
+    log(
+      "parseLine(line: %s) -> { key: %s, assignment: %s, value: %s }",
+      line, key, assignment, value,
+    );
     return { key, assignment, value };
   }
 
   private static interpolateValue(key: string, value: string, values: ParsedData): string {
+    log("interpolateValue(key: %s, value: %s, values: %o)", key, value, values);
     return value.replace(EnvFileParser.INTERPOLATION, (m, k): string => {
+      log("interpolateValue -> replace(m: %s, k: %s)", m, k);
       if (key !== k && k in values) {
         return String(values[k]);
       }
@@ -150,6 +174,7 @@ export class EnvFileParser {
   }
 
   private intepolateValues(values: ParsedData): ParsedData {
+    log("intepolateValues(values: %o)", values);
     for (const key in values) {
       const value = values[key];
       if (typeof value === "string") {
@@ -163,15 +188,18 @@ export class EnvFileParser {
   }
 
   private parseValue(value: string): ParsedValue {
+    log("parseValue(value: %s)", value);
     for (const rule of EnvFileParser.rules) {
       if (rule.condition(value, this.options)) {
         return rule.parse(value, this.options);
       }
     }
+    log("parseValue -> %s", value);
     return value;
   }
 
   public parse(path: string): ParseResult {
+    log("parse(path: %s)", path);
     if (!existsSync(path)) {
       throw new Error(`Path does not exist: ${path}!`);
     }
@@ -185,6 +213,7 @@ export class EnvFileParser {
       if (this.options.environment) {
         paths.splice(1, 0, join(path, `.env.${this.options.environment}`));
       }
+      log("parse -> paths: %o", paths);
       let folderResults: ParseResult = {
         data: {},
         errors: [],
@@ -192,6 +221,7 @@ export class EnvFileParser {
       for (const p of paths) {
         try {
           const results = this.parseFile(p);
+          log("parse -> parsed: %s", p);
           folderResults = {
             data: {
               ...folderResults.data,
@@ -203,6 +233,7 @@ export class EnvFileParser {
             ]
           };
         } catch (e) {
+          log("parse -> error: %s", e);
           // missing file
         }
       }
@@ -212,13 +243,16 @@ export class EnvFileParser {
   }
 
   public parseString(content: string, path?: string): ParseResult {
+    log("parseString(content: %s, path: %s)", content, path);
     const lines = splitToLines(content);
+    log("parseString -> lines: %d", lines.length);
     const results: ParseResult = {
       data: {},
       errors: [],
     };
     for (let i = 0; i < lines.length; ++i) {
       const line = lines[i];
+      log("parseString -> line %d: %s", i + 1, line);
       if (EnvFileParser.isCommentLine(line)) {
         continue;
       }
@@ -261,10 +295,12 @@ export class EnvFileParser {
       results.data[trimmedKey] = this.parseValue(trimmedValue);
     }
     results.data = this.intepolateValues(results.data);
+    log("parseString -> %o", results);
     return results;
   }
 
   public parseFile(path: string): ParseResult {
+    log("parseFile(path: %s)", path);
     return this.parseString(readFileSync(path, { encoding: "utf-8" }));
   }
 }
