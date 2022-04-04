@@ -169,5 +169,5 @@ For detailed documentation see the [TypeDocs documentation](https://szikszail.gi
 This package uses [debug](https://www.npmjs.com/package/debug) for logging, use `dotenv-ng` to see debug logs:
 
 ```shell
-DEBUG=dotenv-ng node my-script.js
+DEBUG=dotenv-ng* node my-script.js
 ```
