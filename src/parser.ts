@@ -5,13 +5,48 @@ import debug = require("debug");
 const log = debug("dotenv-ng:parser");
 
 export interface DotEnvParseOptions {
+  /**
+   * Should the casing of special literals 
+   * (e.g. `true`, `false`, `null`, `undefined`, `NaN`) be ignored. 
+   * Defaults to true.
+   */
   ignoreLiteralCase?: boolean;
+  /**
+   * Should special literals be parsed as their JS values 
+   * (e.g. `true`, `false`, `null`, `undefined`, `NaN`) 
+   * or parsed as strings. Defaults to true.
+   */
   parseLiterals?: boolean;
+  /**
+   * Should number literals be parsed as numbers or parsed as strings.
+   * Defaults to true.
+   */
   parseNumbers?: boolean;
+  /**
+   * Should empty variables (without a values set) be allowed.
+   * Defaults to true.
+   */
   allowEmptyVariables?: boolean;
+  /**
+   * Should orphan keys be allowed (line 24) or parsed as empty variables.
+   * Defaults to false.
+   */
   allowOrphanKeys?: boolean;
+  /**
+   * Should string interpolation evaluated for other
+   * environment variables or handled as literal strings.
+   * Defaults to true.
+   */
   interpolationEnabled?: boolean;
+  /**
+   * Should the existing environment variable values be overwritten.
+   * Defaults to false.
+   */
   overwriteExisting?: boolean;
+  /**
+   * The environment specific environment file to be loaded,
+   * if a folder is processed.
+   */
   environment?: string;
 }
 
