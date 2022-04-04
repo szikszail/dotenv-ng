@@ -75,7 +75,7 @@ console.log(results.data);
 //   "OTHER_CASE_BOOLEAN_VARIABLE": true,
 //   "INTERPOLATE_VARIABLE": "this is also hello world",
 //   "OTHER_BUT_NOT_INTERPOLATED": "this won't work $SIMPLE_STRING_VARIABLE (for now)",
-//   "INTERPOLATED_WITH_SYSVARS": "sytem temp: C:\\WINDOWS\\TEMP",
+//   "INTERPOLATED_WITH_SYSVARS": "sytem temp: C:\\bin\\java",
 //   "this is also an environment variable": "with this value",
 //   "EMPTY_VARIABLE": "",
 //   "NULL_VARIABLE": null,
