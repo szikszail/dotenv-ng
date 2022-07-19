@@ -27,7 +27,7 @@
     "**/*.js.map"
   ],
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=14.0.0"
   },
   "bugs": {
     "url": "https://github.com/szikszail/dotenv-ng/issues"
