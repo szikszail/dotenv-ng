@@ -35,19 +35,19 @@
   "homepage": "https://github.com/szikszail/dotenv-ng#readme",
   "devDependencies": {
     "@types/debug": "^4.1.7",
-    "@types/jest": "^27.4.1",
-    "@types/node": "^17.0.23",
-    "@typescript-eslint/eslint-plugin": "^5.17.0",
-    "@typescript-eslint/parser": "^5.17.0",
+    "@types/jest": "^28.1.6",
+    "@types/node": "^18.0.6",
+    "@typescript-eslint/eslint-plugin": "^5.9.1",
+    "@typescript-eslint/parser": "^3.10.1",
     "copyfiles": "^2.4.1",
     "cross-env": "^7.0.3",
-    "eslint": "^8.12.0",
-    "jest": "^27.5.1",
-    "jest-junit": "^13.0.0",
+    "eslint": "^8.20.0",
+    "jest": "^28.1.3",
+    "jest-junit": "^14.0.0",
     "rimraf": "^3.0.2",
-    "ts-jest": "^27.1.4",
-    "typedoc": "^0.22.13",
-    "typescript": "^4.6.3"
+    "ts-jest": "^28.0.7",
+    "typedoc": "^0.23.8",
+    "typescript": "^4.7.4"
   },
   "dependencies": {
     "debug": "^4.3.4"
