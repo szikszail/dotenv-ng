@@ -83,7 +83,8 @@ interface ParsedLine {
   value: string;
 }
 
-interface ValueParserRule<T> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+interface ValueParserRule<T = any> {
   condition(value: string, options: DotEnvParseOptions): boolean;
   parse(value: string, options: DotEnvParseOptions): T;
 }
@@ -166,7 +167,7 @@ class JSLiteralParser implements ValueParserRule<LiteralValue> {
 
 export class EnvFileParser {
   private options: DotEnvParseOptions = DEFAULT_OPTIONS;
-  private static readonly rules: ValueParserRule<any>[] = [
+  private static readonly rules: ValueParserRule[] = [
     new EmptyParserRule(),
     new NumberParseRule(),
     new StringLiteralParser(),

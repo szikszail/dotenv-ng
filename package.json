@@ -4,6 +4,9 @@
   "description": "This tool is a custom implementation to handle .env files, inspired by dotenv (NPM) and python-dotenv (PyPi).",
   "main": "index.js",
   "types": "index.d.ts",
+  "bin": {
+    "dotenv-ng": "./bin/dotenv-ng.js"
+  },
   "scripts": {
     "build": "npm run buildUpdate && npm test && npm run typedoc",
     "buildUpdate": "npm run clean && npm run compile && npm run copyToDist",
@@ -12,7 +15,8 @@
     "clean": "rimraf ./dist ./docs ./reports ./coverage",
     "test": "cross-env JEST_JUNIT_OUTPUT_DIR=./reports jest --coverage",
     "lint": "eslint . --ext .ts --fix",
-    "compile": "tsc && npm run lint"
+    "compile": "tsc && npm run lint",
+    "prepare": "is-ci || husky install"
   },
   "repository": {
     "type": "git",
@@ -41,16 +45,19 @@
     "@typescript-eslint/parser": "^5.30.7",
     "copyfiles": "^2.4.1",
     "cross-env": "^7.0.3",
-    "eslint": "^8.20.0",
+    "eslint": "^8.23.0",
+    "husky": "^8.0.1",
     "jest": "^28.1.3",
     "jest-junit": "^14.0.0",
     "rimraf": "^3.0.2",
     "ts-jest": "^28.0.7",
-    "typedoc": "^0.23.8",
-    "typescript": "^4.7.4"
+    "typedoc": "^0.23.13",
+    "typescript": "^4.8.2"
   },
   "dependencies": {
-    "debug": "^4.3.4"
+    "debug": "^4.3.4",
+    "is-ci": "^3.0.1",
+    "yargs": "^17.5.1"
   },
   "jest": {
     "reporters": [

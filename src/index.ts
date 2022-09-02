@@ -80,7 +80,7 @@ export function parse(path: string, options?: DotEnvParseOptions): ParseResult;
 /**
  * Parses environment files and returns parsed data and errors.
  * @param path Either the path to the file or the path to the folder
- *             containing environment files. Defaults to {CWD}/.env
+ *             containing environment files. Defaults to (CWD)/.env
  * @param options The parse-options.
  * @returns 
  */
@@ -98,7 +98,7 @@ export function values<D extends ParsedData>(path: string, options?: DotEnvParse
 /**
  * Parses environment files and returns parsed data.
  * @param path Either the path to the file or the path to the folder
- *             containing environment files. Defaults to {CWD}/.env
+ *             containing environment files. Defaults to (CWD)/.env
  * @param options The parse-options.
  * @returns 
  */
@@ -116,7 +116,7 @@ export function load(path: string, options?: DotEnvParseOptions): void;
 /**
  * Parses environment files and loads the parsed data to process.env.
  * @param path Either the path to the file or the path to the folder
- *             containing environment files. Defaults to {CWD}/.env
+ *             containing environment files. Defaults to (CWD)/.env
  * @param options The parse-options.
  * @returns 
  */

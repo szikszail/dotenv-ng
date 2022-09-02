@@ -1,6 +1,7 @@
 import { load, parse, parseString, values } from "../src";
 
 describe("dotenv-ng", () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let prevEnv: any;
 
   beforeEach(() => {
