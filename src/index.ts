@@ -126,7 +126,5 @@ export function load(path?: string | DotEnvParseOptions, options?: DotEnvParseOp
   const v = values(parsedPath, parsedOptions);
   log("load -> %o", v);
   // @ts-ignore ENV can only contain string, but we can ignore it
-  process.env = parsedOptions.overwriteExisting
-    ? { ...process.env, ...v }
-    : { ...v, ...process.env };
+  process.env = parser.getInterpolatedEnv(v);
 }
