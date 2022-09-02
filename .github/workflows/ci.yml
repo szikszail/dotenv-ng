@@ -16,5 +16,3 @@ on:
 jobs:
   call_npm_package-build:
     uses: szikszail/workflows/.github/workflows/npm-package-build.yml@main
-    secrets:
-      npm_token: ${{ secrets.npm_token }}
