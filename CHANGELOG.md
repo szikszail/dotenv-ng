@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.0
+
+### Added
+
+- Added CLI
+- **BREAKING CHANGE** made `overwriteExisting` default to `true`
+
 ## 1.0.0
 
 ### Added

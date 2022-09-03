@@ -57,7 +57,7 @@ export const DEFAULT_OPTIONS: DotEnvParseOptions = {
   allowEmptyVariables: true,
   allowOrphanKeys: false,
   interpolationEnabled: true,
-  overwriteExisting: false,
+  overwriteExisting: true,
 }
 
 export interface ParseError {

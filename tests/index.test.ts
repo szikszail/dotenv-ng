@@ -13,7 +13,7 @@ describe("dotenv-ng", () => {
   });
 
   test("should parse default env file with defaults", () => {
-    process.env.SIMPLE_STRING_VARIABLE = "NOT TO BE OVERWRITTEN";
+    process.env.SIMPLE_STRING_VARIABLE = "TO BE OVERWRITTEN";
     expect(parse()).toEqual({
       data: {
         EXPORTED_VARIABLE: "simple value",
@@ -24,7 +24,7 @@ describe("dotenv-ng", () => {
         SIMPLE_BOOLEAN_VARIABLE: false,
         OTHER_BOOLEAN_VARIABLE: true,
         OTHER_CASE_BOOLEAN_VARIABLE: true,
-        INTERPOLATED_VARIABLE: "this is also NOT TO BE OVERWRITTEN",
+        INTERPOLATED_VARIABLE: "this is also hello world",
         OTHER_BUT_NOT_INTERPOLATED: "this won't work $SIMPLE_STRING_VARIABLE (for now)",
         INTERPOLATED_WITH_SYSVARS: `system temp: ${process.env.JAVA_HOME}`,
         "this is also an environment variable": "with this value",
