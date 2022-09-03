@@ -1,20 +1,27 @@
-import yargs = require("yargs");
+import yargs = require("yargs/yargs");
+import { execSync } from "child_process";
 import { statSync } from "fs";
 import { values, ParsedData } from ".";
-import parser from "./parser";
+import parser, { DotEnvParseOptions } from "./parser";
 
-export async function run(): Promise<void> {
-  const args = await yargs
+import debug = require("debug");
+import { INCORRECT_ENV_VARIABLE, MISSING_COMMAND, MISSING_SEPARATOR, MISSING_VARIABLE, NON_EXISTING_ENV_FILE_OR_FOLDER } from "./error";
+const log = debug("dotenv-ng:cli");
+
+export async function run(pipeIO = false): Promise<string> {
+  log("process.argv: %o", process.argv);
+  const args = await yargs(process.argv.slice(2))
     .options({
       load: {
         type: "string",
         describe: "The path of the env-file or the folder containing the env-files.",
         coerce: args => {
-          if (!args) {
-            return true;
+          try {
+            statSync(args);
+            return args;
+          } catch (e) {
+            throw new Error(NON_EXISTING_ENV_FILE_OR_FOLDER + " " + args);
           }
-          const stat = statSync(args);
-          return stat.isDirectory() || stat.isFile();
         }
       },
       environment: {
@@ -54,37 +61,42 @@ export async function run(): Promise<void> {
       "overwrite-existing": {
         type: "boolean",
         describe: "Should the existing environment variable values be overwritten.",
-        default: false
+        default: true
       },
       var: {
         type: "string",
         array: true,
-        describe: "Key-value pairs of the environment variables to be set",
-        coerce: vars => {
-          for (const envVar of vars) {
-            const [key, value] = envVar.trim().split(/\s*=\s*/);
-            if (!key || !value) {
-              throw new Error("The following environment variable is not correct: " + envVar);
-            }
-          }
-          return vars;
-        }
+        describe: "Key-value pairs of the environment variables to be set"
       }
     })
     .usage("$0 [options] [--var KEY=value KEY=value ...] -- command")
     .check(argv => {
       if (!process.argv.includes("--")) {
-        throw new Error("Separator argument (--) must be set!");
+        throw new Error(MISSING_SEPARATOR);
       }
       if (!argv.load && (!Array.isArray(argv.var) || argv.var.length === 0)) {
-        throw new Error("Either load or var must be set!");
+        throw new Error(MISSING_VARIABLE);
+      }
+      if (!Array.isArray(argv._) || argv._.length === 0) {
+        throw new Error(MISSING_COMMAND);
+      }
+      if (argv.var?.length) {
+        for (const envVar of argv.var) {
+          const [key, value] = envVar.trim().split(/\s*=\s*/);
+          if (!key || !value) {
+            throw new Error(INCORRECT_ENV_VARIABLE + " " + envVar);
+          }
+        }
       }
       return true;
     })
     .help()
+    .fail(false)
     .argv;
 
-  parser.setOptions({
+  log("argv: %O", args);
+
+  const options: DotEnvParseOptions = {
     ignoreLiteralCase: args.ignoreLiteralCase,
     parseLiterals: args.parseLiterals,
     parseNumbers: args.parseNumbers,
@@ -93,11 +105,14 @@ export async function run(): Promise<void> {
     interpolationEnabled: args.interpolationEnabled,
     overwriteExisting: args.overwriteExisting,
     environment: args.environment,
-  });
+  };
+  log("parseOptions: %O", options);
+  parser.setOptions(options);
 
   let envValues: ParsedData = {};
   if (args.load) {
-    envValues = values(args.load);
+    log("loaded: %O", envValues);
+    envValues = values(args.load, options);
   }
   if (Array.isArray(args.var)) {
     for (const envVar of args.var) {
@@ -107,8 +122,17 @@ export async function run(): Promise<void> {
       }
     }
   }
-  const processedEnvValues = !args.overwriteExisting
-    ? { ...process.env, ...envValues }
-    : { ...envValues, ...process.env };
-  console.log({ envValues, processedEnvValues });
+  log("parsed: %O", envValues);
+  const processedEnvValues = parser.getInterpolatedEnv(envValues);
+  log("processed: %o", processedEnvValues);
+  log("command: %s", args._.join(" "));
+  const r = execSync(args._.join(" "), {
+    // @ts-ignore
+    env: processedEnvValues,
+    cwd: process.cwd(),
+    stdio: pipeIO ? "pipe" : "inherit",
+    encoding: "utf-8",
+  });
+  log("result: %o", r);
+  return r;
 }

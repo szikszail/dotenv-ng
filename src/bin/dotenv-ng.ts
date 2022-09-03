@@ -3,5 +3,5 @@
 import { run } from "../cli";
 
 (async () => {
-  await run();    
+  await run(false);    
 })();
