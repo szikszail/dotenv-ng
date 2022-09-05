@@ -168,7 +168,7 @@ console.log(v);
 
 ### Updating environment variables
 
-To update the environment variables in the scripts context (`process.env`), you can use the `load` function:
+To update the environment variables in the context of the script (`process.env``), you can use the `load` function:
 
 ```typescript
 import { load } from "dotenv-ng";
@@ -187,11 +187,15 @@ console.log(process.env);
 // }
 ```
 
-By default, `load` won't overwrite the existing environment variables, to enable it set the `overwriteExisting: boolean` configuration option:
+### Overwrite
+
+By default, `load` won't overwrite the existing environment variables, to enable it, set the `overwriteExisting`: boolean` configuration option:
 
 ```typescript
 load(".env", { overwriteExisting: true })
 ```
+
+If `overwriteExisting` is disabled, then string interpolation in case of `parse` and `values` will **always** take the host environment variable, even if it is redefined in the env-files (see [index.test.ts#l15](tests/index.test.ts#L15)).
 
 ### Configuration
 
@@ -205,7 +209,7 @@ load(".env", { overwriteExisting: true })
 | `allowEmptyVariables`  | `boolean` | Should empty variables (without a values set) be allowed.                                                                     | `true`  |
 | `allowOrphanKeys`      | `boolean` | Should orphan keys be allowed (line 24) or parsed as empty variables.                                                         | `false` |
 | `interpolationEnabled` | `boolean` | Should string interpolation evaluated for other environment variables or handled as literal strings.                          | `true`  |
-| `overwriteExisting`    | `boolean` | Should the existing environment variable values be overwritten.                                                               | `true`  |
+| `overwriteExisting`    | `boolean` | Should the existing environment variable values be overwritten.                                                               | `false` |
 | `environment`          | `string`  | The environment specific environment file to be loaded, if a folder is processed.                                             | -       |
 
 All functions process the `.env` (or folder containing `.env` files) path and accept the configuration mentioned previously.
