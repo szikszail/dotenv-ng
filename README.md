@@ -168,7 +168,7 @@ console.log(v);
 
 ### Updating environment variables
 
-To update the environment variables in the context of the script (`process.env``), you can use the `load` function:
+To update the environment variables in the context of the script (`process.env`), you can use the `load` function:
 
 ```typescript
 import { load } from "dotenv-ng";
@@ -189,7 +189,7 @@ console.log(process.env);
 
 ### Overwrite
 
-By default, `load` won't overwrite the existing environment variables, to enable it, set the `overwriteExisting`: boolean` configuration option:
+By default, `load` won't overwrite the existing environment variables, to enable it, set the `overwriteExisting: boolean` configuration option:
 
 ```typescript
 load(".env", { overwriteExisting: true })
