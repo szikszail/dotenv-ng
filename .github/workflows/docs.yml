@@ -6,5 +6,5 @@ on:
       - main
   workflow_dispatch:
 jobs:
-  build_and_publish_docs:
+  call_typedocs_pages:
     uses: szikszail/workflows/.github/workflows/typedocs-pages.yml@main
