@@ -2,13 +2,64 @@
 
 ![Downloads](https://img.shields.io/npm/dw/dotenv-ng?style=flat-square) ![Version@npm](https://img.shields.io/npm/v/dotenv-ng?label=version%40npm&style=flat-square) ![Version@git](https://img.shields.io/github/package-json/v/szikszail/dotenv-ng/main?label=version%40git&style=flat-square) ![CI](https://img.shields.io/github/workflow/status/szikszail/dotenv-ng/CI/main?label=ci&style=flat-square) ![Docs](https://img.shields.io/github/workflow/status/szikszail/dotenv-ng/Docs/main?label=docs&style=flat-square)
 
+![OS Windows](https://img.shields.io/badge/OS-Windows-green) ![OS Linux](https://img.shields.io/badge/OS-Linux-green) ![OS MacOS](https://img.shields.io/badge/OS-MacOS-green)
+
 This tool is a custom implementation to handle `.env` files, inspired by [dotenv (NPM)](https://www.npmjs.com/package/dotenv) and [python-dotenv (PyPi)](https://pypi.org/project/python-dotenv/), including features like:
  - Handling simple `.env` file
  - Handling environment variable interpolation
  - Handling file hierarchy
  - Handling JavaScript literals
 
-## Usage
+## CLI
+
+The tool contains a cross-platform command (`dotenv-ng`) that can be used to execute any command with environment variables set, either explicitly in the command or from env-files or env-folders. The command supports all options of the API (see below).
+
+### Install
+
+```shell
+npm install -g dotenv-ng
+```
+
+### Usage
+
+```
+dotenv-ng [options] [--var KEY=value KEY=value ...] -- command
+
+Options:
+  --version                Show version number                         [boolean]
+  --load                   The path of the env-file or the folder containing the
+                           env-files.                                   [string]
+  --environment            The environment-specific env-file to be loaded, if a
+                           folder is processed.                         [string]
+  --ignore-literal-case    Should the casing of special literals (e.g. true,
+                           false, null, undefined, NaN) be ignored?
+                                                       [boolean] [default: true]
+  --parse-literals         Should special literals be parsed as their JS values
+                           (e.g. true, false, null, undefined, NaN) or parsed as
+                           strings?                    [boolean] [default: true]
+  --parse-numbers          Should number literals be parsed as numbers or parsed
+                           as strings?                 [boolean] [default: true]
+  --allow-empty-variables  Should empty variables (without a value set) be
+                           allowed?                    [boolean] [default: true]
+  --allow-orphan-keys      Should orphan keys be allowed (line 24) or parsed as
+                           empty variables?           [boolean] [default: false]
+  --interpolation-enabled  Should string interpolation be evaluated for other
+                           environment variables or handled as literal strings?
+                                                       [boolean] [default: true]
+  --overwrite-existing     Should the existing environment variable values be
+                           overwritten?                [boolean] [default: true]
+  --var                    Case sensitive key=value pairs of the environment
+                           variables to be set.                          [array]
+  --help                   Show help                                   [boolean]
+
+- Either --load or one or more --var must be specified.
+- All boolean attributes have a --no version to set them to false, e.g.
+--no-overwrite-existing.
+- When a quoted argument is passed to the command itself, then the whole command
+must be quoted.
+```
+
+## API
 
 ### Environment files
 
@@ -51,6 +102,12 @@ OTHER_NULL_VARIABLE=NULL
 UNDEFINED_VARIABLE=undefined
 OTHER_UNDEFINED_VARIABLE=UNDEFINED
 LITERAL_NULL_VARIABLE="null" # to use these particular values as strings set them as a string
+```
+
+### Install
+
+```shell
+npm install dotenv-ng --save
 ```
 
 ### Parsing
@@ -111,7 +168,7 @@ console.log(v);
 
 ### Updating environment variables
 
-To update the environment variables in the scripts context (`process.env`), you can use the `load` function:
+To update the environment variables in the context of the script (`process.env`), you can use the `load` function:
 
 ```typescript
 import { load } from "dotenv-ng";
@@ -130,11 +187,15 @@ console.log(process.env);
 // }
 ```
 
-By default, `load` won't overwrite the existing environment variables, to enable it set the `overwriteExisting: boolean` configuration option:
+### Overwrite
+
+By default, `load` won't overwrite the existing environment variables, to enable it, set the `overwriteExisting: boolean` configuration option:
 
 ```typescript
 load(".env", { overwriteExisting: true })
 ```
+
+If `overwriteExisting` is disabled, then string interpolation in case of `parse` and `values` will **always** take the host environment variable, even if it is redefined in the env-files (see [index.test.ts#l15](tests/index.test.ts#L15)).
 
 ### Configuration
 

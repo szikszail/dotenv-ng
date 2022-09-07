@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.0
+
+### Added
+
+- Added CLI
+
 ## 1.0.0
 
 ### Added

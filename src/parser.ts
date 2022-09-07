@@ -83,7 +83,8 @@ interface ParsedLine {
   value: string;
 }
 
-interface ValueParserRule<T> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+interface ValueParserRule<T = any> {
   condition(value: string, options: DotEnvParseOptions): boolean;
   parse(value: string, options: DotEnvParseOptions): T;
 }
@@ -140,12 +141,12 @@ class StringLiteralParser implements ValueParserRule<string> {
 
 class JSLiteralParser implements ValueParserRule<LiteralValue> {
   private static readonly JS_LITERALS: { [key: string]: LiteralValue } = {
-    'null': null,
-    'undefined': undefined,
-    'true': true,
-    'false': false,
-    'nan': NaN,
-    'NaN': NaN,
+    "null": null,
+    "undefined": undefined,
+    "true": true,
+    "false": false,
+    "nan": NaN,
+    "NaN": NaN,
   }
 
   prepare(value: string, options: DotEnvParseOptions): string {
@@ -164,9 +165,19 @@ class JSLiteralParser implements ValueParserRule<LiteralValue> {
   }
 }
 
+class MissingKeyError extends Error {
+  CODE = "MISSING_KEY";
+}
+class OrphanKeyError extends Error {
+  CODE = "ORPHAN_KEY";
+}
+class EmptyVariableError extends Error {
+  CODE = "EMPTY_VARIABLE";
+}
+
 export class EnvFileParser {
   private options: DotEnvParseOptions = DEFAULT_OPTIONS;
-  private static readonly rules: ValueParserRule<any>[] = [
+  private static readonly rules: ValueParserRule[] = [
     new EmptyParserRule(),
     new NumberParseRule(),
     new StringLiteralParser(),
@@ -208,14 +219,19 @@ export class EnvFileParser {
     })
   }
 
+  public getInterpolatedEnv(values: ParsedData): ParsedData {
+    log("getInterpolatedEnv(values: %o, overwrite: %b)", values, this.options.overwriteExisting);
+    return this.options.overwriteExisting
+      ? { ...process.env, ...values }
+      : { ...values, ...process.env };
+  }
+
   private intepolateValues(values: ParsedData): ParsedData {
-    log("intepolateValues(values: %o)", values);
+    log("intepolateValues(values: %o, overwrite: %b)", values, this.options.overwriteExisting);
     for (const key in values) {
       const value = values[key];
       if (typeof value === "string") {
-        const sourceValues = this.options.overwriteExisting
-          ? { ...process.env, ...values }
-          : { ...values, ...process.env };
+        const sourceValues = this.getInterpolatedEnv(values);
         values[key] = EnvFileParser.interpolateValue(key, value, sourceValues);
       }
     }
@@ -240,10 +256,11 @@ export class EnvFileParser {
     }
     if (statSync(path).isFile()) {
       return this.parseFile(path);
-    } else if (statSync(path).isDirectory()) {
+    } 
+    if (statSync(path).isDirectory()) {
       const paths = [
-        join(path, '.env'),
-        join(path, '.env.local'),
+        join(path, ".env"),
+        join(path, ".env.local"),
       ];
       if (this.options.environment) {
         paths.splice(1, 0, join(path, `.env.${this.options.environment}`));
@@ -277,6 +294,32 @@ export class EnvFileParser {
     throw new Error(`Invalid path: ${path}!`);
   }
 
+  public parseLine(line: string): [string, ParsedValue] {
+    log("parseLine(line: %s)", line);
+    if (EnvFileParser.isCommentLine(line)) {
+      return;
+    }
+
+    const { key, assignment, value } = EnvFileParser.parseLine(line);
+    if (!key) {
+      throw new MissingKeyError();
+    }
+
+    const trimmedKey = key.trim();
+
+    if (!assignment && !this.options.allowOrphanKeys) {
+      throw new OrphanKeyError();
+    }
+
+    const trimmedValue = value.trim();
+
+    if (!trimmedValue && !this.options.allowEmptyVariables) {
+      throw new EmptyVariableError();
+    }
+
+    return [trimmedKey, this.parseValue(trimmedValue)];
+  }
+
   public parseString(content: string, path?: string): ParseResult {
     log("parseString(content: %s, path: %s)", content, path);
     const lines = splitToLines(content);
@@ -288,46 +331,20 @@ export class EnvFileParser {
     for (let i = 0; i < lines.length; ++i) {
       const line = lines[i];
       log("parseString -> line %d: %s", i + 1, line);
-      if (EnvFileParser.isCommentLine(line)) {
-        continue;
-      }
 
-      const { key, assignment, value } = EnvFileParser.parseLine(line);
-      if (!key) {
+      try {
+        const result = this.parseLine(line);
+        if (result) {
+          results.data[result[0]] = result[1];
+        }
+      } catch (e) {
         results.errors.push({
           file: path,
           line: i + 1,
-          error: "MISSING_KEY",
+          error: e.CODE,
           data: line,
         });
-        continue;
       }
-
-      const trimmedKey = key.trim();
-
-      if (!assignment && !this.options.allowOrphanKeys) {
-        results.errors.push({
-          file: path,
-          line: i + 1,
-          error: "ORPHAN_KEY",
-          data: line,
-        });
-        continue;
-      }
-
-      const trimmedValue = value.trim();
-
-      if (!trimmedValue && !this.options.allowEmptyVariables) {
-        results.errors.push({
-          file: path,
-          line: i + 1,
-          error: "EMPTY_VARIABLE",
-          data: line,
-        });
-        continue;
-      }
-
-      results.data[trimmedKey] = this.parseValue(trimmedValue);
     }
     results.data = this.intepolateValues(results.data);
     log("parseString -> %o", results);
