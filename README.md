@@ -12,7 +12,7 @@ This tool is a custom implementation to handle `.env` files, inspired by [dotenv
 
 ## CLI
 
-The tool contains a cross-platform command (`dotenv-ng`) that can be used to execute any command with environment variables set, either explicitly in the command or from env-files or env-folders. The command supports all options of the API (se,e below).
+The tool contains a cross-platform command (`dotenv-ng`) that can be used to execute any command with environment variables set, either explicitly in the command or from env-files or env-folders. The command supports all options of the API (see below).
 
 ### Install
 
