@@ -8,10 +8,10 @@
     "dotenv-ng": "./bin/dotenv-ng.js"
   },
   "scripts": {
-    "build": "npm run buildUpdate && npm test && npm run typedoc",
+    "build": "npm run buildUpdate && npm test && npm run docs",
     "buildUpdate": "npm run clean && npm run compile && npm run copyToDist",
     "copyToDist": "copyfiles -f *.txt *.md package.json dist",
-    "typedoc": "typedoc --out ./docs ./src && touch ./docs/.nojekyll",
+    "docs": "typedoc --out ./docs ./src && touch ./docs/.nojekyll",
     "clean": "rimraf ./dist ./docs ./reports ./coverage",
     "test": "cross-env JEST_JUNIT_OUTPUT_DIR=./reports jest --coverage",
     "lint": "eslint . --ext .ts --fix",
