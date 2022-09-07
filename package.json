@@ -1,6 +1,6 @@
 {
   "name": "dotenv-ng",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "This tool is a custom implementation to handle .env files, inspired by dotenv (NPM) and python-dotenv (PyPi).",
   "main": "index.js",
   "types": "index.d.ts",
@@ -57,6 +57,7 @@
   },
   "dependencies": {
     "debug": "^4.3.4",
+    "tslib": "^2.4.0",
     "yargs": "^17.5.1"
   },
   "jest": {
