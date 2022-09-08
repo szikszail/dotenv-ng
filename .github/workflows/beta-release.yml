@@ -5,6 +5,6 @@ on:
       - 'beta/**'
 jobs:
   call_npm_beta_release:
-    uses: szikszail/workflows/.github/workflows/npm-beta-release.yml@main
+    uses: szikszail/workflows/.github/workflows/npm-beta-release.yml@v1
     secrets:
       npm_token: ${{ secrets.npm_token }}
