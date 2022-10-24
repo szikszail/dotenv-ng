@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.2
+
+### Fixed
+
+- Fixed PowerShell separator argument
+
 ## 1.1.1
 
 ### Fixed

@@ -8,9 +8,19 @@ import debug = require("debug");
 import { INCORRECT_ENV_VARIABLE, MISSING_COMMAND, MISSING_SEPARATOR, MISSING_VARIABLE, NON_EXISTING_ENV_FILE_OR_FOLDER } from "./error";
 const log = debug("dotenv-ng:cli");
 
+const SEPARATOR_RX = /^-{2,}$/;
+const SEPARATOR = "--";
+
 export async function run(pipeIO = false): Promise<string> {
   log("process.argv: %o", process.argv);
-  const args = await yargs(process.argv.slice(2))
+  const argv = process.argv.slice(2).map((arg: string): string => {
+    if (SEPARATOR_RX.test(arg)) {
+      return SEPARATOR;
+    }
+    return arg;
+  })
+  log("process.argv (processed): %o", argv);
+  const args = await yargs(argv)
     .options({
       load: {
         type: "string",
@@ -74,7 +84,7 @@ export async function run(pipeIO = false): Promise<string> {
       "- All boolean attributes have a --no version to set them to false, e.g. --no-overwrite-existing.\n" +
       "- When a quoted argument is passed to the command itself, then the whole command must be quoted.")
     .check(argv => {
-      if (!process.argv.includes("--")) {
+      if (!process.argv.some((arg) => SEPARATOR_RX.test(arg))) {
         throw new Error(MISSING_SEPARATOR);
       }
       if (!argv.load && (!Array.isArray(argv.var) || argv.var.length === 0)) {

@@ -94,6 +94,11 @@ describe("CLI", () => {
     expect(r.success).toBeTruthy();
     expect(r.stdout).toContain("hello world");
   });
+  test("should handle tripple-dash", async () => {
+    const r = await cli(["--load", "tests/data/.env", "---", nodeCommand("console.log(process.env.SIMPLE_STRING_VARIABLE);")]);
+    expect(r.success).toBeTruthy();
+    expect(r.stdout).toContain("hello world");
+  });
 
   test("should load env-folder without environment", async () => {
     const r = await cli(["--load", "tests/data", "--", nodeCommand("console.log(process.env.SIMPLE_STRING_VARIABLE);")]);

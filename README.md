@@ -1,6 +1,6 @@
 # dotenv-ng
 
-![Downloads](https://img.shields.io/npm/dw/dotenv-ng?style=flat-square) ![Version@npm](https://img.shields.io/npm/v/dotenv-ng?label=version%40npm&style=flat-square) ![Version@git](https://img.shields.io/github/package-json/v/szikszail/dotenv-ng/main?label=version%40git&style=flat-square) ![CI](https://img.shields.io/github/workflow/status/szikszail/dotenv-ng/CI/main?label=ci&style=flat-square) ![Docs](https://img.shields.io/github/workflow/status/szikszail/dotenv-ng/Docs/main?label=docs&style=flat-square)
+![Downloads](https://img.shields.io/npm/dw/dotenv-ng?style=flat-square) ![Version@npm](https://img.shields.io/npm/v/dotenv-ng?label=version%40npm&style=flat-square) ![Version@git](https://img.shields.io/github/package-json/v/szikszail/dotenv-ng/main?label=version%40git&style=flat-square) ![CI](https://img.shields.io/github/workflow/status/szikszail/dotenv-ng/ci/main?label=ci&style=flat-square) ![Docs](https://img.shields.io/github/workflow/status/szikszail/dotenv-ng/docs/main?label=docs&style=flat-square)
 
 ![OS Windows](https://img.shields.io/badge/OS-Windows-green) ![OS Linux](https://img.shields.io/badge/OS-Linux-green) ![OS MacOS](https://img.shields.io/badge/OS-MacOS-green)
 
@@ -59,12 +59,16 @@ Options:
 must be quoted.
 ```
 
+#### PowerShell
+
+As in **PowerShell**, the `--` separator is interpreted differently, the command also accepts the `---` separator.
+
 ## API
 
 ### Environment files
 
-You can define a `.env` file containing configuration, environment variables, with
- - Simple number, string, boolean values
+You can define a `.env` file containing configuration, and environment variables, with
+ - A simple number, string, or boolean values
  - Comments
  - Environment variables interpolation
 
