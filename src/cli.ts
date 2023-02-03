@@ -135,9 +135,9 @@ export async function run(pipeIO = false): Promise<string> {
       }
     }
   }
-  log("parsed: %O", envValues);
+  log("parsed: %O", Object.keys(envValues));
   const processedEnvValues = parser.getInterpolatedEnv(envValues);
-  log("processed: %o", processedEnvValues);
+  log("processed: %o", Object.keys(processedEnvValues));
   log("command: %s", args._.join(" "));
   const r = execSync(args._.join(" "), {
     // @ts-ignore

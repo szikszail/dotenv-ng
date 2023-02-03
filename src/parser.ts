@@ -209,7 +209,7 @@ export class EnvFileParser {
   }
 
   private static interpolateValue(key: string, value: string, values: ParsedData): string {
-    log("interpolateValue(key: %s, value: %s, values: %o)", key, value, values);
+    log("interpolateValue(key: %s, value: %s, values: %o)", key, value, Object.keys(values));
     return value.replace(EnvFileParser.INTERPOLATION, (m, k): string => {
       log("interpolateValue -> replace(m: %s, k: %s)", m, k);
       if (key !== k && k in values) {
