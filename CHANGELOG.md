@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.3
+
+### Fixed
+
+- Fixed GitHub Actions badges
+- Updated dependencies
+- Fixed Security issues identified by CodeQL
+
 ## 1.1.2
 
 ### Fixed
