@@ -184,7 +184,7 @@ export class EnvFileParser {
     new JSLiteralParser(),
   ];
   private static readonly COMMENT_LINE = /^#/i;
-  private static readonly VARIABLE_LINE = /^(?:export\s+)?([^=]*)\s*(=)?(.*)$/i;
+  private static readonly VARIABLE_LINE = /^(?:export\s+)?([^=]*)\s*(=)?(.*?)(?:#|$)/i;
   private static readonly INTERPOLATION = /\$\{(.*?)\}/;
 
   public setOptions(options: DotEnvParseOptions): void {
@@ -257,7 +257,7 @@ export class EnvFileParser {
     }
     if (statSync(path).isFile()) {
       return this.parseFile(path);
-    }
+    } 
     if (statSync(path).isDirectory()) {
       const paths = [
         join(path, ".env"),
@@ -315,7 +315,7 @@ export class EnvFileParser {
       throw new OrphanKeyError();
     }
 
-    const trimmedValue = value.split("#")[0].trim();
+    const trimmedValue = value.trim();
 
     if (!trimmedValue && !this.options.allowEmptyVariables) {
       throw new EmptyVariableError();
