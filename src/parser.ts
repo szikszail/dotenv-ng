@@ -183,8 +183,8 @@ export class EnvFileParser {
     new StringLiteralParser(),
     new JSLiteralParser(),
   ];
-  private static readonly COMMENT_LINE = /^\s*#/i;
-  private static readonly VARIABLE_LINE = /^\s*(?:export\s+)?([^=]*)\s*(=)?(.*?)(?:#|$)/i;
+  private static readonly COMMENT_LINE = /^#/i;
+  private static readonly VARIABLE_LINE = /^(?:export\s+)?([^=]*)\s*(=)?(.*?)(?:#|$)/i;
   private static readonly INTERPOLATION = /\$\{(.*?)\}/;
 
   public setOptions(options: DotEnvParseOptions): void {
@@ -199,6 +199,7 @@ export class EnvFileParser {
     log("isCommentLine(line: %s)", line);
     return EnvFileParser.COMMENT_LINE.test(line);
   }
+
   private static parseLine(line: string): ParsedLine {
     const [, key, assignment, value] = line.match(EnvFileParser.VARIABLE_LINE);
     log(
@@ -296,6 +297,9 @@ export class EnvFileParser {
 
   public parseLine(line: string): [string, ParsedValue] {
     log("parseLine(line: %s)", line);
+
+    line = line.trim();
+
     if (EnvFileParser.isCommentLine(line)) {
       return;
     }
