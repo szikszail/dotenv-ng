@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.4
+
+### Fixed
+
+- Fixed security issue: https://github.com/szikszail/dotenv-ng/security/code-scanning/1
+
 ## 1.1.3
 
 ### Fixed
