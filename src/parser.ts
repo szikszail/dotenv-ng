@@ -184,7 +184,7 @@ export class EnvFileParser {
     new JSLiteralParser(),
   ];
   private static readonly COMMENT_LINE = /^#/i;
-  private static readonly VARIABLE_LINE = /^(?:export\s+)?([^=]*)\s*(=)?([^#$\n]*?)(?:#|$)/i;
+  private static readonly VARIABLE_LINE = /^(?:export\s+)?([^=]*)\s*(=)?([^#\n]*?)(?:#|$|\n)/i;
   private static readonly INTERPOLATION = /\$\{(.*?)\}/;
 
   public setOptions(options: DotEnvParseOptions): void {
