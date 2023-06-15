@@ -57,7 +57,7 @@
   },
   "dependencies": {
     "debug": "^4.3.4",
-    "tslib": "^2.5.0",
+    "tslib": "^2.5.2",
     "yargs": "^17.7.2"
   },
   "jest": {
