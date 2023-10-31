@@ -39,7 +39,7 @@
   "homepage": "https://github.com/szikszail/dotenv-ng#readme",
   "devDependencies": {
     "@types/debug": "^4.1.7",
-    "@types/jest": "^29.4.0",
+    "@types/jest": "^29.5.5",
     "@types/node": "^18.18.3",
     "@typescript-eslint/eslint-plugin": "^5.50.0",
     "@typescript-eslint/parser": "^5.50.0",
