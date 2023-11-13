@@ -43,6 +43,40 @@ describe("dotenv-ng", () => {
     })
   });
 
+  test("should parse default env file with normalized names", () => {
+    process.env.SIMPLE_STRING_VARIABLE = "NOT TO BE OVERWRITTEN";
+    expect(parse({
+      normalize: true
+    })).toEqual({
+      data: {
+        EXPORTED_VARIABLE: "simple value",
+        OTHER_EXPORTED_VARIABLE: 12123.13,
+        SIMPLE_STRING_VARIABLE: "hello world",
+        OTHER_STRING_VARIABLE: "hello world",
+        SIMPLE_NUMBER_VARIABLE: 1,
+        SIMPLE_BOOLEAN_VARIABLE: false,
+        OTHER_BOOLEAN_VARIABLE: true,
+        OTHER_CASE_BOOLEAN_VARIABLE: true,
+        INTERPOLATED_VARIABLE: "this is also NOT TO BE OVERWRITTEN",
+        OTHER_BUT_NOT_INTERPOLATED: "this won't work $SIMPLE_STRING_VARIABLE (for now)",
+        INTERPOLATED_WITH_SYSVARS: `system temp: ${process.env.HOME}`,
+        "this is also an environment variable": "with this value",
+        THIS_IS_ALSO_AN_ENVIRONMENT_VARIABLE: "with this value",
+        EMPTY_VARIABLE: "",
+        NULL_VARIABLE: null,
+        OTHER_NULL_VARIABLE: null,
+        UNDEFINED_VARIABLE: undefined,
+        OTHER_UNDEFINED_VARIABLE: undefined,
+        LITERAL_NULL_VARIABLE: "null",
+      },
+      errors: [
+        {line: 24, error: "ORPHAN_KEY", data: "THIS_WILL_BE_IGNORED"},
+        {line: 25, error: "MISSING_KEY", data: "=\"this as well.\""}
+      ],
+      optional: []
+    })
+  });
+
   test("should parse default env file with overwritten options", () => {
     expect(parse({
       parseLiterals: false,

@@ -48,6 +48,13 @@ export interface DotEnvParseOptions {
    * if a folder is processed.
    */
   environment?: string;
+  /**
+   * Should the environment variable names be normalized,
+   * and a normalized version be appended to the set
+   * of environment variables. Normalized names should
+   * be uppercase and instead of white space contain underscore.
+   */
+  normalize?: boolean;
 }
 
 export const DEFAULT_OPTIONS: DotEnvParseOptions = {
@@ -58,6 +65,7 @@ export const DEFAULT_OPTIONS: DotEnvParseOptions = {
   allowOrphanKeys: false,
   interpolationEnabled: true,
   overwriteExisting: false,
+  normalize: false,
 }
 
 export interface ParseError {
@@ -186,7 +194,7 @@ export class EnvFileParser {
     new JSLiteralParser(),
   ];
   private static readonly COMMENT_LINE = /^#/i;
-  private static readonly VARIABLE_LINE = /^(?:export\s+)?([^=:]*)(:default)?\s*(=)?([^#\n]*?)(?:#|$|\n)/i;
+  private static readonly VARIABLE_LINE = /^(?:export\s+)?([^=?]*)(\?)?\s*(=)?([^#\n]*?)(?:#|$|\n)/i;
   private static readonly INTERPOLATION = /\$\{(.*?)}/;
 
   public setOptions(options: DotEnvParseOptions): void {
@@ -354,6 +362,9 @@ export class EnvFileParser {
         if (result) {
           const [key, value, optional] = result;
           results.data[key] = value;
+          if (this.options.normalize) {
+            results.data[key.toUpperCase().replace(/\s+/g, "_")] = value;
+          }
           if (optional) {
             results.optional.push(key);
           }

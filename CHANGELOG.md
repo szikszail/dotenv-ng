@@ -5,7 +5,7 @@
 ### Added
 
 - Added option to set default environment variables
-- Added support for multi-line string values
+- Added support for variable name normalization
 
 ## 1.1.4
 
