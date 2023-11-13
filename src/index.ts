@@ -123,8 +123,8 @@ export function load(path: string, options?: DotEnvParseOptions): void;
 export function load(path?: string | DotEnvParseOptions, options?: DotEnvParseOptions): void {
   const { path: parsedPath, options: parsedOptions } = prepareParameters(path, options);
   log("load(path: %s, options: %o)", parsedPath, parsedOptions);
-  const v = values(parsedPath, parsedOptions);
-  log("load -> %o", v);
+  const parsed = parse(parsedPath, parsedOptions);
+  log("load -> %o", parsed);
   // @ts-ignore ENV can only contain string, but we can ignore it
-  process.env = parser.getInterpolatedEnv(v);
+  process.env = parser.getInterpolatedEnv(parsed.data, parsed.optional);
 }

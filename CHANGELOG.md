@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.0
+
+### Added
+
+- Added option to set default environment variables
+- Added support for multi-line string values
+
 ## 1.1.4
 
 ### Fixed
