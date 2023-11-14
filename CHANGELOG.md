@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.1
+
+### Added
+
+- Added `normalize` option to CLI
+
 ## 1.2.0
 
 ### Added

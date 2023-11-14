@@ -53,6 +53,9 @@ Options:
                                                        [boolean] [default: true]
   --overwrite-existing     Should the existing environment variable values be
                            overwritten?                [boolean] [default: true]
+  --normalize              Should the variable names be normalized (i.e. 
+                           uppercase without white-space) and appended to the
+                           variables?                 [boolean] [default: false]
   --var                    Case sensitive key=value pairs of the environment
                            variables to be set.                          [array]
   --help                   Show help                                   [boolean]

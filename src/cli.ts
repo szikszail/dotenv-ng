@@ -73,6 +73,11 @@ export async function run(pipeIO = false): Promise<string> {
         describe: "Should the existing environment variable values be overwritten?",
         default: true
       },
+      "normalize": {
+        type: "boolean",
+        describe: "Should the variable names be normalized (i.e. uppercase without white-space) and appended to the variables?",
+        default: false
+      },
       var: {
         type: "string",
         array: true,
@@ -118,6 +123,7 @@ export async function run(pipeIO = false): Promise<string> {
     interpolationEnabled: args.interpolationEnabled,
     overwriteExisting: args.overwriteExisting,
     environment: args.environment,
+    normalize: args.normalize,
   };
   log("parseOptions: %O", options);
   parser.setOptions(options);
