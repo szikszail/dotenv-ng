@@ -230,6 +230,15 @@ export class EnvFileParser {
     })
   }
 
+  public static normalizeEnv(values: ParsedData): ParsedData {
+    log("normalizeEnv(values: %o)", values);
+    const normalized: ParsedData = { ...values };
+    for (const key in values) {
+      normalized[key.toUpperCase().replace(/\s+/g, "_")] = values[key];
+    }
+    return normalized;
+  }
+
   public getInterpolatedEnv(values: ParsedData, optional: string[]): ParsedData {
     log("getInterpolatedEnv(values: %o, overwrite: %b)", values, this.options.overwriteExisting);
     const interpolated: ParsedData = { ...process.env };
@@ -362,9 +371,6 @@ export class EnvFileParser {
         if (result) {
           const [key, value, optional] = result;
           results.data[key] = value;
-          if (this.options.normalize) {
-            results.data[key.toUpperCase().replace(/\s+/g, "_")] = value;
-          }
           if (optional) {
             results.optional.push(key);
           }
@@ -379,6 +385,9 @@ export class EnvFileParser {
       }
     }
     results.data = this.interpolateValues(results.data, results.optional);
+    if (this.options.normalize) {
+      results.data = EnvFileParser.normalizeEnv(results.data);
+    }
     log("parseString -> %o", results);
     return results;
   }
