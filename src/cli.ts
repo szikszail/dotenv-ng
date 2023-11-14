@@ -1,7 +1,7 @@
 import yargs = require("yargs/yargs");
 import { execSync } from "child_process";
 import { statSync } from "fs";
-import { values, ParsedData } from ".";
+import {parse, ParseResult} from ".";
 import parser, { DotEnvParseOptions } from "./parser";
 
 import debug = require("debug");
@@ -122,21 +122,21 @@ export async function run(pipeIO = false): Promise<string> {
   log("parseOptions: %O", options);
   parser.setOptions(options);
 
-  let envValues: ParsedData = {};
+  let envValues: ParseResult = { data: {}, optional: [], errors: []};
   if (args.load) {
     log("loaded: %O", envValues);
-    envValues = values(args.load, options);
+    envValues = parse(args.load, options);
   }
   if (Array.isArray(args.var)) {
     for (const envVar of args.var) {
       const result = parser.parseLine(envVar);
       if (result) {
-        envValues[result[0]] = result[1];
+        envValues.data[result[0]] = result[1];
       }
     }
   }
   log("parsed: %O", Object.keys(envValues));
-  const processedEnvValues = parser.getInterpolatedEnv(envValues);
+  const processedEnvValues = parser.getInterpolatedEnv(envValues.data, envValues.optional);
   log("processed: %o", Object.keys(processedEnvValues));
   log("command: %s", args._.join(" "));
   const r = execSync(args._.join(" "), {

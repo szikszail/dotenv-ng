@@ -63,3 +63,4 @@ coverage
 junit.xml
 .vscode
 reports
+.idea

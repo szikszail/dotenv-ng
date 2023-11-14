@@ -4,15 +4,20 @@
 
 ![OS Windows](https://img.shields.io/badge/OS-Windows-green) ![OS Linux](https://img.shields.io/badge/OS-Linux-green) ![OS MacOS](https://img.shields.io/badge/OS-MacOS-green)
 
-This tool is a custom implementation to handle `.env` files, inspired by [dotenv (NPM)](https://www.npmjs.com/package/dotenv) and [python-dotenv (PyPi)](https://pypi.org/project/python-dotenv/), including features like:
- - Handling simple `.env` file
- - Handling environment variable interpolation
- - Handling file hierarchy
- - Handling JavaScript literals
+This tool is a custom implementation to handle `.env` files, inspired
+by [dotenv (NPM)](https://www.npmjs.com/package/dotenv)
+and [python-dotenv (PyPi)](https://pypi.org/project/python-dotenv/), including features like:
+
+- Handling simple `.env` file
+- Handling environment variable interpolation
+- Handling file hierarchy
+- Handling JavaScript literals
 
 ## CLI
 
-The tool contains a cross-platform command (`dotenv-ng`) that can be used to execute any command with environment variables set, either explicitly in the command or from env-files or env-folders. The command supports all options of the API (see below).
+The tool contains a cross-platform command (`dotenv-ng`) that can be used to execute any command with environment
+variables set, either explicitly in the command or from env-files or env-folders. The command supports all options of
+the API (see below).
 
 ### Install
 
@@ -68,9 +73,10 @@ As in **PowerShell**, the `--` separator is interpreted differently, the command
 ### Environment files
 
 You can define a `.env` file containing configuration, and environment variables, with
- - A simple number, string, or boolean values
- - Comments
- - Environment variables interpolation
+
+- A simple number, string, or boolean values
+- Comments
+- Environment variables interpolation
 
 ```sh
 # .env
@@ -106,6 +112,11 @@ OTHER_NULL_VARIABLE=NULL
 UNDEFINED_VARIABLE=undefined
 OTHER_UNDEFINED_VARIABLE=UNDEFINED
 LITERAL_NULL_VARIABLE="null" # to use these particular values as strings set them as a string
+# A variable can be set optional, by using
+# the ?= instead of the = sign. In this case
+# the variable will be set only if it is not already
+# set during parsing, even if overwriteExisting is set.
+SOME_KEY ?= SOME DEFAULT VALUE
 ```
 
 ### Install
@@ -116,10 +127,11 @@ npm install dotenv-ng --save
 
 ### Parsing
 
-An environment file can be parsed with the `parse` function. This will parse the valid values and the parsing errors as well.
+An environment file can be parsed with the `parse` function. This will parse the valid values and the parsing errors as
+well.
 
 ```typescript
-import { parse } from "dotenv-ng"
+import {parse} from "dotenv-ng"
 
 const results = parse(".env")
 console.log(results.data);
@@ -141,13 +153,18 @@ console.log(results.data);
 //   "OTHER_NULL_VARIABLE": null,
 //   "UNDEFINED_VARIABLE": undefined,
 //   "OTHER_UNDERFINED_VARIABLE: undefined,
-//   "LITERAL_NULL_VARIABLE": "null"
+//   "LITERAL_NULL_VARIABLE": "null",
+//   "SOME_KEY": "SOME DEFAULT VALUE"
 // }
 
 console.log(results.errors);
 // [
 //   { "line": 24, "error": "ORPHAN_KEY", "data": "THIS_WILL_BE_IGNORED" },
 //   { "line": 25, "error": "MISSING_KEY", "data": "=\"this as well\"" }
+// ]
+console.log(results.optional);
+// [
+//   "SOME_KEY"
 // ]
 ```
 
@@ -156,7 +173,7 @@ console.log(results.errors);
 To retrieve the valid, parsed values, you can use the `values` function:
 
 ```typescript
-import { values } from "dotenv-ng";
+import {values} from "dotenv-ng";
 
 const v = values(".env")
 console.log(v);
@@ -167,6 +184,7 @@ console.log(v);
 //   ...
 //   "OTHER_UNDERFINED_VARIABLE: undefined,
 //   "LITERAL_NULL_VARIABLE": "null"
+//   "SOME_KEY": "SOME DEFAULT VALUE"
 // }
 ```
 
@@ -175,7 +193,7 @@ console.log(v);
 To update the environment variables in the context of the script (`process.env`), you can use the `load` function:
 
 ```typescript
-import { load } from "dotenv-ng";
+import {load} from "dotenv-ng";
 
 load(".env");
 console.log(process.env);
@@ -193,20 +211,22 @@ console.log(process.env);
 
 ### Overwrite
 
-By default, `load` won't overwrite the existing environment variables, to enable it, set the `overwriteExisting: boolean` configuration option:
+By default, `load` won't overwrite the existing environment variables, to enable it, set
+the `overwriteExisting: boolean` configuration option:
 
 ```typescript
-load(".env", { overwriteExisting: true })
+load(".env", {overwriteExisting: true})
 ```
 
-If `overwriteExisting` is disabled, then string interpolation in case of `parse` and `values` will **always** take the host environment variable, even if it is redefined in the env-files (see [index.test.ts#l15](tests/index.test.ts#L15)).
+If `overwriteExisting` is disabled, then string interpolation in case of `parse` and `values` will **always** take the
+host environment variable, even if it is redefined in the env-files (see [index.test.ts#l15](tests/index.test.ts#L15)).
 
 ### Configuration
 
 `parse` (and other functions such as `load` and `values`) accepts an optional configuration to adjust parsing logic:
 
 | Option                 | Type      | Description                                                                                                                   | Default |
-| :--------------------- | :-------- | :---------------------------------------------------------------------------------------------------------------------------- | :------ |
+|:-----------------------|:----------|:------------------------------------------------------------------------------------------------------------------------------|:--------|
 | `ingoreLiteralCase`    | `boolean` | Should the casing of special literals (e.g. `true`, `false`, `null`, `undefined`, `NaN`) be ignored.                          | `true`  |
 | `parseLiterals`        | `boolean` | Should special literals be parsed as their JS values (e.g. `true`, `false`, `null`, `undefined`, `NaN`) or parsed as strings. | `true`  |
 | `parseNumbers`         | `boolean` | Should number literals be parsed as numbers or parsed as strings.                                                             | `true`  |
@@ -215,15 +235,19 @@ If `overwriteExisting` is disabled, then string interpolation in case of `parse`
 | `interpolationEnabled` | `boolean` | Should string interpolation evaluated for other environment variables or handled as literal strings.                          | `true`  |
 | `overwriteExisting`    | `boolean` | Should the existing environment variable values be overwritten.                                                               | `false` |
 | `environment`          | `string`  | The environment specific environment file to be loaded, if a folder is processed.                                             | -       |
+| `normalize`            | `boolean` | Should the variable names be normalized (i.e. uppercase without white-space) and appended to the variables.                   | `false` |
 
-All functions process the `.env` (or folder containing `.env` files) path and accept the configuration mentioned previously.
+All functions process the `.env` (or folder containing `.env` files) path and accept the configuration mentioned
+previously.
+
 - If no path is passed to the function, the `.env` file in the current working directory will be processed
 - If a path to an environment file is passed to the function, that environment file is processed
-- If a path to a folder (that contains environment files) is passed to the function, all `.env*` files are processed, and the combined results are returned.
+- If a path to a folder (that contains environment files) is passed to the function, all `.env*` files are processed,
+  and the combined results are returned.
   The precedence of loading and combination is:
-  1. Default environment file (`.env`), if it exists
-  2. Environment specific environment file (e.g. `.env.development`), if set in the options and exists
-  3. Local environment file (`.env.local`), if it exists
+    1. Default environment file (`.env`), if it exists
+    2. Environment specific environment file (e.g. `.env.development`), if set in the options and exists
+    3. Local environment file (`.env.local`), if it exists
 
 ## Other
 

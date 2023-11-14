@@ -6,14 +6,14 @@ const log = debug("dotenv-ng:parser");
 
 export interface DotEnvParseOptions {
   /**
-   * Should the casing of special literals 
-   * (e.g. `true`, `false`, `null`, `undefined`, `NaN`) be ignored. 
+   * Should the casing of special literals
+   * (e.g. `true`, `false`, `null`, `undefined`, `NaN`) be ignored.
    * Defaults to true.
    */
   ignoreLiteralCase?: boolean;
   /**
-   * Should special literals be parsed as their JS values 
-   * (e.g. `true`, `false`, `null`, `undefined`, `NaN`) 
+   * Should special literals be parsed as their JS values
+   * (e.g. `true`, `false`, `null`, `undefined`, `NaN`)
    * or parsed as strings. Defaults to true.
    */
   parseLiterals?: boolean;
@@ -48,6 +48,13 @@ export interface DotEnvParseOptions {
    * if a folder is processed.
    */
   environment?: string;
+  /**
+   * Should the environment variable names be normalized,
+   * and a normalized version be appended to the set
+   * of environment variables. Normalized names should
+   * be uppercase and instead of white space contain underscore.
+   */
+  normalize?: boolean;
 }
 
 export const DEFAULT_OPTIONS: DotEnvParseOptions = {
@@ -58,6 +65,7 @@ export const DEFAULT_OPTIONS: DotEnvParseOptions = {
   allowOrphanKeys: false,
   interpolationEnabled: true,
   overwriteExisting: false,
+  normalize: false,
 }
 
 export interface ParseError {
@@ -75,12 +83,14 @@ export interface ParsedData {
 export interface ParseResult {
   data: ParsedData;
   errors: ParseError[];
+  optional: string[];
 }
 
 interface ParsedLine {
   key: string;
   assignment: string;
   value: string;
+  optional: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -184,8 +194,8 @@ export class EnvFileParser {
     new JSLiteralParser(),
   ];
   private static readonly COMMENT_LINE = /^#/i;
-  private static readonly VARIABLE_LINE = /^(?:export\s+)?([^=]*)\s*(=)?([^#\n]*?)(?:#|$|\n)/i;
-  private static readonly INTERPOLATION = /\$\{(.*?)\}/;
+  private static readonly VARIABLE_LINE = /^(?:export\s+)?([^=?]*)(\?)?\s*(=)?([^#\n]*?)(?:#|$|\n)/i;
+  private static readonly INTERPOLATION = /\$\{(.*?)}/;
 
   public setOptions(options: DotEnvParseOptions): void {
     log("setOptions(options: %o)", options);
@@ -201,12 +211,12 @@ export class EnvFileParser {
   }
 
   private static parseLine(line: string): ParsedLine {
-    const [, key, assignment, value] = line.match(EnvFileParser.VARIABLE_LINE);
+    const [, key, def, assignment, value] = line.match(EnvFileParser.VARIABLE_LINE);
     log(
       "parseLine(line: %s) -> { key: %s, assignment: %s, value: %s }",
       line, key, assignment, value,
     );
-    return { key, assignment, value };
+    return { key, assignment, value, optional: !!def };
   }
 
   private static interpolateValue(key: string, value: string, values: ParsedData): string {
@@ -220,19 +230,33 @@ export class EnvFileParser {
     })
   }
 
-  public getInterpolatedEnv(values: ParsedData): ParsedData {
-    log("getInterpolatedEnv(values: %o, overwrite: %b)", values, this.options.overwriteExisting);
-    return this.options.overwriteExisting
-      ? { ...process.env, ...values }
-      : { ...values, ...process.env };
+  public static normalizeEnv(values: ParsedData): ParsedData {
+    log("normalizeEnv(values: %o)", values);
+    const normalized: ParsedData = { ...values };
+    for (const key in values) {
+      normalized[key.toUpperCase().replace(/\s+/g, "_")] = values[key];
+    }
+    return normalized;
   }
 
-  private intepolateValues(values: ParsedData): ParsedData {
-    log("intepolateValues(values: %o, overwrite: %b)", values, this.options.overwriteExisting);
+  public getInterpolatedEnv(values: ParsedData, optional: string[]): ParsedData {
+    log("getInterpolatedEnv(values: %o, overwrite: %b)", values, this.options.overwriteExisting);
+    const interpolated: ParsedData = { ...process.env };
     for (const key in values) {
       const value = values[key];
+      if (!(key in interpolated) || (!optional.includes(key) && this.options.overwriteExisting)) {
+        interpolated[key] = value;
+      }
+    }
+    return interpolated;
+  }
+
+  private interpolateValues(values: ParsedData, optional: string[]): ParsedData {
+    log("interpolateValues(values: %o, optionals: %o)", values, optional);
+    for (const key in values) {
+      const sourceValues = this.getInterpolatedEnv(values, optional);
+      const value = values[key];
       if (typeof value === "string") {
-        const sourceValues = this.getInterpolatedEnv(values);
         values[key] = EnvFileParser.interpolateValue(key, value, sourceValues);
       }
     }
@@ -257,7 +281,7 @@ export class EnvFileParser {
     }
     if (statSync(path).isFile()) {
       return this.parseFile(path);
-    } 
+    }
     if (statSync(path).isDirectory()) {
       const paths = [
         join(path, ".env"),
@@ -270,6 +294,7 @@ export class EnvFileParser {
       let folderResults: ParseResult = {
         data: {},
         errors: [],
+        optional: [],
       };
       for (const p of paths) {
         try {
@@ -283,6 +308,10 @@ export class EnvFileParser {
             errors: [
               ...folderResults.errors,
               ...results.errors,
+            ],
+            optional: [
+              ...folderResults.optional,
+              ...results.optional,
             ]
           };
         } catch (e) {
@@ -295,7 +324,7 @@ export class EnvFileParser {
     throw new Error(`Invalid path: ${path}!`);
   }
 
-  public parseLine(line: string): [string, ParsedValue] {
+  public parseLine(line: string): [string, ParsedValue, boolean] {
     log("parseLine(line: %s)", line);
 
     line = line.trim();
@@ -304,12 +333,12 @@ export class EnvFileParser {
       return;
     }
 
-    const { key, assignment, value } = EnvFileParser.parseLine(line);
+    const { key, assignment, value, optional } = EnvFileParser.parseLine(line);
     if (!key) {
       throw new MissingKeyError();
     }
 
-    const trimmedKey = key.trim();
+    const trimmedKey = key.trim().replace(/(^"|"$)/, "");
 
     if (!assignment && !this.options.allowOrphanKeys) {
       throw new OrphanKeyError();
@@ -321,7 +350,7 @@ export class EnvFileParser {
       throw new EmptyVariableError();
     }
 
-    return [trimmedKey, this.parseValue(trimmedValue)];
+    return [trimmedKey, this.parseValue(trimmedValue), optional];
   }
 
   public parseString(content: string, path?: string): ParseResult {
@@ -331,6 +360,7 @@ export class EnvFileParser {
     const results: ParseResult = {
       data: {},
       errors: [],
+      optional: [],
     };
     for (let i = 0; i < lines.length; ++i) {
       const line = lines[i];
@@ -339,7 +369,11 @@ export class EnvFileParser {
       try {
         const result = this.parseLine(line);
         if (result) {
-          results.data[result[0]] = result[1];
+          const [key, value, optional] = result;
+          results.data[key] = value;
+          if (optional) {
+            results.optional.push(key);
+          }
         }
       } catch (e) {
         results.errors.push({
@@ -350,7 +384,10 @@ export class EnvFileParser {
         });
       }
     }
-    results.data = this.intepolateValues(results.data);
+    results.data = this.interpolateValues(results.data, results.optional);
+    if (this.options.normalize) {
+      results.data = EnvFileParser.normalizeEnv(results.data);
+    }
     log("parseString -> %o", results);
     return results;
   }
