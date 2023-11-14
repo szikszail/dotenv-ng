@@ -1,7 +1,7 @@
 import parser, {DEFAULT_OPTIONS, DotEnvParseOptions, EnvFileParser, ParsedData, ParseResult} from "./parser";
+import debug from "./debug";
 export type { DotEnvParseOptions, ParseError, ParseResult, ParsedData, ParsedValue, LiteralValue } from "./parser";
 
-import debug = require("debug");
 const log = debug("dotenv-ng");
 
 export const DEFAULT_ENV_FILE = ".env";
@@ -68,11 +68,9 @@ function prepareParameters(
  * @returns 
  */
 export function parseString(content: string, options?: DotEnvParseOptions): ParseResult {
-  log("parseString(content: %s, options: %o)", content, options);
+  log("parseString(content: %p, options: %o)", content, options);
   parser.setOptions(options);
-  const result = parser.parseString(content);
-  log("parseString -> %o", result);
-  return result;
+  return parser.parseString(content);
 }
 
 export function parse(options?: DotEnvParseOptions): ParseResult;
@@ -88,9 +86,7 @@ export function parse(path?: string | DotEnvParseOptions, options?: DotEnvParseO
   const { path: parsedPath, options: parsedOptions } = prepareParameters(path, options);
   log("parse(path: %s, options: %o)", parsedPath, parsedOptions);
   parser.setOptions(parsedOptions);
-  const result = parser.parse(parsedPath);
-  log("parse -> %o", result);
-  return result;
+  return parser.parse(parsedPath);
 }
 
 export function values<D extends ParsedData>(options?: DotEnvParseOptions): D;
@@ -106,9 +102,7 @@ export function values<D extends ParsedData>(path?: string | DotEnvParseOptions,
   const { path: parsedPath, options: parsedOptions } = prepareParameters(path, options);
   log("values(path: %s, options: %o)", parsedPath, parsedOptions);
   const parsed = parse(parsedPath, parsedOptions);
-  const result = parsed.data as D;
-  log("values -> %o", result);
-  return result;
+  return parsed.data as D;
 }
 
 export function load(options?: DotEnvParseOptions): void;
@@ -124,7 +118,6 @@ export function load(path?: string | DotEnvParseOptions, options?: DotEnvParseOp
   const { path: parsedPath, options: parsedOptions } = prepareParameters(path, options);
   log("load(path: %s, options: %o)", parsedPath, parsedOptions);
   const parsed = parse(parsedPath, parsedOptions);
-  log("load -> %o", parsed);
   // @ts-ignore ENV can only contain string, but we can ignore it
   process.env = parser.getInterpolatedEnv(parsed.data, parsed.optional);
   if (options.normalize) {

@@ -3,8 +3,8 @@ import { execSync } from "child_process";
 import { statSync } from "fs";
 import {parse, ParseResult} from ".";
 import parser, { DotEnvParseOptions } from "./parser";
+import debug from "./debug";
 
-import debug = require("debug");
 import { INCORRECT_ENV_VARIABLE, MISSING_COMMAND, MISSING_SEPARATOR, MISSING_VARIABLE, NON_EXISTING_ENV_FILE_OR_FOLDER } from "./error";
 const log = debug("dotenv-ng:cli");
 
@@ -12,7 +12,7 @@ const SEPARATOR_RX = /^-{2,}$/;
 const SEPARATOR = "--";
 
 export async function run(pipeIO = false): Promise<string> {
-  log("process.argv: %o", process.argv);
+  log("process.argv: %a", process.argv);
   const argv = process.argv.slice(2).map((arg: string): string => {
     if (SEPARATOR_RX.test(arg)) {
       return SEPARATOR;
@@ -112,7 +112,7 @@ export async function run(pipeIO = false): Promise<string> {
     .fail(false)
     .argv;
 
-  log("argv: %O", args);
+  log("argv: %k", args);
 
   const options: DotEnvParseOptions = {
     ignoreLiteralCase: args.ignoreLiteralCase,
@@ -130,7 +130,6 @@ export async function run(pipeIO = false): Promise<string> {
 
   let envValues: ParseResult = { data: {}, optional: [], errors: []};
   if (args.load) {
-    log("loaded: %O", envValues);
     envValues = parse(args.load, options);
   }
   if (Array.isArray(args.var)) {
@@ -141,10 +140,10 @@ export async function run(pipeIO = false): Promise<string> {
       }
     }
   }
-  log("parsed: %O", Object.keys(envValues));
+  log("parsed: %k", envValues);
   const processedEnvValues = parser.getInterpolatedEnv(envValues.data, envValues.optional);
-  log("processed: %o", Object.keys(processedEnvValues));
-  log("command: %s", args._.join(" "));
+  log("processed: %k", processedEnvValues);
+  log("command: `%s`", args._.join(" "));
   const r = execSync(args._.join(" "), {
     // @ts-ignore
     env: processedEnvValues,

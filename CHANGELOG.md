@@ -6,6 +6,10 @@
 
 - Added `normalize` option to CLI
 
+### Fixed
+
+- Fixed [security issue](https://github.com/szikszail/dotenv-ng/security/code-scanning/4) with Debug
+
 ## 1.2.0
 
 ### Added

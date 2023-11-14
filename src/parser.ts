@@ -1,7 +1,7 @@
 import { existsSync, statSync, readFileSync } from "fs";
 import { join } from "path";
+import debug from "./debug";
 
-import debug = require("debug");
 const log = debug("dotenv-ng:parser");
 
 export interface DotEnvParseOptions {
@@ -105,12 +105,10 @@ function splitToLines(s: string): string[] {
 
 class EmptyParserRule implements ValueParserRule<string> {
   condition(value: string): boolean {
-    log("EmptyParserRule:condition(value: %s)", value);
     return value === "";
   }
 
   parse(): string {
-    log("EmptyParserRule:parse()");
     return "";
   }
 }
@@ -119,18 +117,15 @@ class NumberParseRule implements ValueParserRule<number> {
   private static readonly NUMBER_LITERAL_SEPARATORS = /[_\s]/g;
 
   prepare(value: string): string {
-    log("NumberParseRule:prepare(value: %s)", value);
     return value.replace(NumberParseRule.NUMBER_LITERAL_SEPARATORS, "");
   }
 
   condition(value: string, options: DotEnvParseOptions): boolean {
-    log("NumberParseRule:condition(value: %s, options: %o)", value, options);
     const prepared = this.prepare(value);
     return options.parseNumbers && prepared && !isNaN(+prepared);
   }
 
   parse(value: string): number {
-    log("NumberParseRule:parse(value: %s)", value);
     return +this.prepare(value);
   }
 }
@@ -139,12 +134,10 @@ class StringLiteralParser implements ValueParserRule<string> {
   private static readonly STRING_LITERAL = /^(['"])(.*)\1$/;
 
   condition(value: string): boolean {
-    log("StringLiteralParser:condition(value: %s)", value);
     return StringLiteralParser.STRING_LITERAL.test(value);
   }
 
   parse(value: string): string {
-    log("StringLiteralParser:parse(value: %s)", value);
     return value.match(StringLiteralParser.STRING_LITERAL)[2];
   }
 }
@@ -160,17 +153,14 @@ class JSLiteralParser implements ValueParserRule<LiteralValue> {
   }
 
   prepare(value: string, options: DotEnvParseOptions): string {
-    log("JSLiteralParser:prepare(value: %s, options: %o)", value, options);
     return options.ignoreLiteralCase ? value.toLowerCase() : value;
   }
 
   condition(value: string, options: DotEnvParseOptions): boolean {
-    log("JSLiteralParser:condition(value: %s, options: %o)", value, options);
     return options.parseLiterals && this.prepare(value, options) in JSLiteralParser.JS_LITERALS;
   }
 
   parse(value: string, options: DotEnvParseOptions): LiteralValue {
-    log("JSLiteralParser:parse(value: %s, options: %o)", value, options);
     return JSLiteralParser.JS_LITERALS[this.prepare(value, options)];
   }
 }
@@ -206,23 +196,23 @@ export class EnvFileParser {
   }
 
   private static isCommentLine(line: string): boolean {
-    log("isCommentLine(line: %s)", line);
+    log("isCommentLine(line: %p)", line);
     return EnvFileParser.COMMENT_LINE.test(line);
   }
 
   private static parseLine(line: string): ParsedLine {
     const [, key, def, assignment, value] = line.match(EnvFileParser.VARIABLE_LINE);
     log(
-      "parseLine(line: %s) -> { key: %s, assignment: %s, value: %s }",
-      line, key, assignment, value,
+      "parseLine(line: %p) -> { key: %s, assignment: %s, value: %p, optional: %s }",
+      line, key, assignment, value, !!def,
     );
     return { key, assignment, value, optional: !!def };
   }
 
   private static interpolateValue(key: string, value: string, values: ParsedData): string {
-    log("interpolateValue(key: %s, value: %s, values: %o)", key, value, Object.keys(values));
+    log("interpolateValue(key: %s, value: %p, values: %k)", key, value, values);
     return value.replace(EnvFileParser.INTERPOLATION, (m, k): string => {
-      log("interpolateValue -> replace(m: %s, k: %s)", m, k);
+      log("interpolateValue -> replace(m: %p, k: %s)", m, k);
       if (key !== k && k in values) {
         return String(values[k]);
       }
@@ -231,7 +221,7 @@ export class EnvFileParser {
   }
 
   public static normalizeEnv(values: ParsedData): ParsedData {
-    log("normalizeEnv(values: %o)", values);
+    log("normalizeEnv(values: %k)", values);
     const normalized: ParsedData = { ...values };
     for (const key in values) {
       normalized[key.toUpperCase().replace(/\s+/g, "_")] = values[key];
@@ -240,7 +230,7 @@ export class EnvFileParser {
   }
 
   public getInterpolatedEnv(values: ParsedData, optional: string[]): ParsedData {
-    log("getInterpolatedEnv(values: %o, overwrite: %b)", values, this.options.overwriteExisting);
+    log("getInterpolatedEnv(values: %k, overwrite: %s)", values, this.options.overwriteExisting);
     const interpolated: ParsedData = { ...process.env };
     for (const key in values) {
       const value = values[key];
@@ -252,7 +242,7 @@ export class EnvFileParser {
   }
 
   private interpolateValues(values: ParsedData, optional: string[]): ParsedData {
-    log("interpolateValues(values: %o, optionals: %o)", values, optional);
+    log("interpolateValues(values: %k, optional: %a)", values, optional);
     for (const key in values) {
       const sourceValues = this.getInterpolatedEnv(values, optional);
       const value = values[key];
@@ -264,7 +254,7 @@ export class EnvFileParser {
   }
 
   private parseValue(value: string): ParsedValue {
-    log("parseValue(value: %s)", value);
+    log("parseValue(value: %p)", value);
     for (const rule of EnvFileParser.rules) {
       if (rule.condition(value, this.options)) {
         return rule.parse(value, this.options);
@@ -290,7 +280,7 @@ export class EnvFileParser {
       if (this.options.environment) {
         paths.splice(1, 0, join(path, `.env.${this.options.environment}`));
       }
-      log("parse -> paths: %o", paths);
+      log("parse -> paths: %a", paths);
       let folderResults: ParseResult = {
         data: {},
         errors: [],
@@ -325,7 +315,7 @@ export class EnvFileParser {
   }
 
   public parseLine(line: string): [string, ParsedValue, boolean] {
-    log("parseLine(line: %s)", line);
+    log("parseLine(line: %p)", line);
 
     line = line.trim();
 
@@ -354,7 +344,7 @@ export class EnvFileParser {
   }
 
   public parseString(content: string, path?: string): ParseResult {
-    log("parseString(content: %s, path: %s)", content, path);
+    log("parseString(content.length: %d, path: %s)", content?.length, path);
     const lines = splitToLines(content);
     log("parseString -> lines: %d", lines.length);
     const results: ParseResult = {
@@ -364,7 +354,7 @@ export class EnvFileParser {
     };
     for (let i = 0; i < lines.length; ++i) {
       const line = lines[i];
-      log("parseString -> line %d: %s", i + 1, line);
+      log("parseString -> line %d: %p", i + 1, line);
 
       try {
         const result = this.parseLine(line);
@@ -388,7 +378,6 @@ export class EnvFileParser {
     if (this.options.normalize) {
       results.data = EnvFileParser.normalizeEnv(results.data);
     }
-    log("parseString -> %o", results);
     return results;
   }
 
