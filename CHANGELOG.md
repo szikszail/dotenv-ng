@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.0
+
+### Fixed
+
+- Fixed [CLI error handling](https://github.com/szikszail/dotenv-ng/issues/37)
+- Fixed [process.env handling](https://github.com/szikszail/dotenv-ng/issues/36)
+
 ## 1.2.1
 
 ### Added

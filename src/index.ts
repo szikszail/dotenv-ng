@@ -1,6 +1,7 @@
 import parser, {DEFAULT_OPTIONS, DotEnvParseOptions, EnvFileParser, ParsedData, ParseResult} from "./parser";
 import debug from "./debug";
-export type { DotEnvParseOptions, ParseError, ParseResult, ParsedData, ParsedValue, LiteralValue } from "./parser";
+
+export type {DotEnvParseOptions, ParseError, ParseResult, ParsedData, ParsedValue, LiteralValue} from "./parser";
 
 const log = debug("dotenv-ng");
 
@@ -65,7 +66,7 @@ function prepareParameters(
  * Parses environment file content and returns parsed data and errors.
  * @param content The content of the environment file.
  * @param options The parse-options.
- * @returns 
+ * @returns
  */
 export function parseString(content: string, options?: DotEnvParseOptions): ParseResult {
   log("parseString(content: %p, options: %o)", content, options);
@@ -80,10 +81,10 @@ export function parse(path: string, options?: DotEnvParseOptions): ParseResult;
  * @param path Either the path to the file or the path to the folder
  *             containing environment files. Defaults to (CWD)/.env
  * @param options The parse-options.
- * @returns 
+ * @returns
  */
 export function parse(path?: string | DotEnvParseOptions, options?: DotEnvParseOptions): ParseResult {
-  const { path: parsedPath, options: parsedOptions } = prepareParameters(path, options);
+  const {path: parsedPath, options: parsedOptions} = prepareParameters(path, options);
   log("parse(path: %s, options: %o)", parsedPath, parsedOptions);
   parser.setOptions(parsedOptions);
   return parser.parse(parsedPath);
@@ -96,10 +97,10 @@ export function values<D extends ParsedData>(path: string, options?: DotEnvParse
  * @param path Either the path to the file or the path to the folder
  *             containing environment files. Defaults to (CWD)/.env
  * @param options The parse-options.
- * @returns 
+ * @returns
  */
 export function values<D extends ParsedData>(path?: string | DotEnvParseOptions, options?: DotEnvParseOptions): D {
-  const { path: parsedPath, options: parsedOptions } = prepareParameters(path, options);
+  const {path: parsedPath, options: parsedOptions} = prepareParameters(path, options);
   log("values(path: %s, options: %o)", parsedPath, parsedOptions);
   const parsed = parse(parsedPath, parsedOptions);
   return parsed.data as D;
@@ -112,16 +113,24 @@ export function load(path: string, options?: DotEnvParseOptions): void;
  * @param path Either the path to the file or the path to the folder
  *             containing environment files. Defaults to (CWD)/.env
  * @param options The parse-options.
- * @returns 
+ * @returns
  */
 export function load(path?: string | DotEnvParseOptions, options?: DotEnvParseOptions): void {
-  const { path: parsedPath, options: parsedOptions } = prepareParameters(path, options);
+  const {path: parsedPath, options: parsedOptions} = prepareParameters(path, options);
   log("load(path: %s, options: %o)", parsedPath, parsedOptions);
   const parsed = parse(parsedPath, parsedOptions);
-  // @ts-ignore ENV can only contain string, but we can ignore it
-  process.env = parser.getInterpolatedEnv(parsed.data, parsed.optional);
+  const interpolated = parser.getInterpolatedEnv(parsed.data, parsed.optional);
   if (options.normalize) {
+    appendToProcessEnv(EnvFileParser.normalizeEnv(interpolated));
+  } else {
+    appendToProcessEnv(interpolated);
+  }
+}
+
+function appendToProcessEnv(data: ParsedData) {
+  // iterate over all keys and append them to process.env
+  for (const key of Object.keys(data)) {
     // @ts-ignore ENV can only contain string, but we can ignore it
-    process.env = EnvFileParser.normalizeEnv(process.env);
+    process.env[key] = data[key];
   }
 }

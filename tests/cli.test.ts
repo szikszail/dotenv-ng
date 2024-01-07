@@ -123,4 +123,10 @@ describe("CLI", () => {
     expect(r.success).toBeTruthy();
     expect(r.stdout).toContain("UNDEFINED");
   });
+
+  test("should handle failed process", async () => {
+    const r = await cli(["--load", "tests/data", "--", nodeCommand("throw new Error('test');")]);
+    expect(r.success).toBeFalsy();
+    expect(r.stderr).toContain("test");
+  });
 });
