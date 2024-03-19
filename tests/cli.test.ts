@@ -112,6 +112,24 @@ describe("CLI", () => {
     expect(r.stdout).toContain("true");
   });
 
+  test("should load env-folder with environment from DOTENVNG_ENV", async () => {
+    const r = await cli(
+      ["--load", "tests/data", "--", nodeCommand("console.log(process.env.DEV);")],
+      { DOTENVNG_ENV: "dev"}
+    );
+    expect(r.success).toBeTruthy();
+    expect(r.stdout).toContain("true");
+  });
+
+  test("should load env-folder with environment from NODE_ENV", async () => {
+    const r = await cli(
+      ["--load", "tests/data", "--", nodeCommand("console.log(process.env.DEV);")],
+      { NODE_ENV: "dev"}
+    );
+    expect(r.success).toBeTruthy();
+    expect(r.stdout).toContain("true");
+  });
+
   test("should load env-folder with environment and handle env-vars", async () => {
     const r = await cli(["--var", "DEV=false", "--load", "tests/data", "--environment", "dev", "--", nodeCommand("console.log(process.env.DEV);")]);
     expect(r.success).toBeTruthy();

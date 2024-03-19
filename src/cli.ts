@@ -36,7 +36,8 @@ export async function run(pipeIO = false): Promise<string> {
       },
       environment: {
         type: "string",
-        describe: "The environment-specific env-file to be loaded, if a folder is processed."
+        describe: "The environment-specific env-file to be loaded, if a folder is processed.",
+        default: process.env.DOTENVNG_ENV ?? process.env.NODE_ENV
       },
       "ignore-literal-case": {
         type: "boolean",

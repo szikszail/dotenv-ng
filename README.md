@@ -35,7 +35,8 @@ Options:
   --load                   The path of the env-file or the folder containing the
                            env-files.                                   [string]
   --environment            The environment-specific env-file to be loaded, if a
-                           folder is processed.                         [string]
+                           folder is processed.                         
+                                  [string] [default: $DOTENVNG_ENV or $NODE_ENV]
   --ignore-literal-case    Should the casing of special literals (e.g. true,
                            false, null, undefined, NaN) be ignored?
                                                        [boolean] [default: true]
