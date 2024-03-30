@@ -66,6 +66,11 @@ Options:
 --no-overwrite-existing.
 - When a quoted argument is passed to the command itself, then the whole command
 must be quoted.
+- The environment value is determined in order: 
+    1. the --environment command line option, if set, otherwise
+    2. the DOTENVNG_ENV environment variable's value, if set, otherwise
+    3. the NODE_ENV environment variable's value, if set, otherwise
+    4. nothing.
 ```
 
 #### PowerShell
