@@ -35,7 +35,8 @@ Options:
   --load                   The path of the env-file or the folder containing the
                            env-files.                                   [string]
   --environment            The environment-specific env-file to be loaded, if a
-                           folder is processed.                         [string]
+                           folder is processed.                         
+                                  [string] [default: $DOTENVNG_ENV or $NODE_ENV]
   --ignore-literal-case    Should the casing of special literals (e.g. true,
                            false, null, undefined, NaN) be ignored?
                                                        [boolean] [default: true]
@@ -65,6 +66,11 @@ Options:
 --no-overwrite-existing.
 - When a quoted argument is passed to the command itself, then the whole command
 must be quoted.
+- The environment value is determined in order: 
+    1. the --environment command line option, if set, otherwise
+    2. the DOTENVNG_ENV environment variable's value, if set, otherwise
+    3. the NODE_ENV environment variable's value, if set, otherwise
+    4. nothing.
 ```
 
 #### PowerShell

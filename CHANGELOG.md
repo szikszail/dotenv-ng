@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.0
+
+### Added
+
+- Added support for `DOTENVNG_ENV` and `NODE_ENV` environment variables as environment [#45](https://github.com/szikszail/dotenv-ng/issues/45)
+
 ## 1.3.0
 
 ### Fixed
