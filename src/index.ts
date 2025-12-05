@@ -1,7 +1,20 @@
-import parser, {DEFAULT_OPTIONS, DotEnvParseOptions, EnvFileParser, ParsedData, ParseResult} from "./parser";
+import parser, {
+  DEFAULT_OPTIONS,
+  DotEnvParseOptions,
+  EnvFileParser,
+  ParsedData,
+  ParseResult,
+} from "./parser";
 import debug from "./debug";
 
-export type {DotEnvParseOptions, ParseError, ParseResult, ParsedData, ParsedValue, LiteralValue} from "./parser";
+export type {
+  DotEnvParseOptions,
+  ParseError,
+  ParseResult,
+  ParsedData,
+  ParsedValue,
+  LiteralValue,
+} from "./parser";
 
 const log = debug("dotenv-ng");
 
@@ -16,12 +29,13 @@ interface PreparedParameters {
 function prepareParameters(
   path?: string | DotEnvParseOptions,
   options?: DotEnvParseOptions,
-  defaultOptions?: DotEnvParseOptions
+  defaultOptions?: DotEnvParseOptions,
 ): PreparedParameters {
   log(
     "prepareParameters(path: %s, options: %o, defaultOptions: %o)",
     typeof path === "string" ? path : JSON.stringify(path),
-    options, defaultOptions,
+    options,
+    defaultOptions,
   );
   // call()
   if (!path) {
@@ -42,7 +56,7 @@ function prepareParameters(
       options: {
         ...DEFAULT_OPTIONS,
         ...(defaultOptions || {}),
-        ...(path as DotEnvParseOptions || {}),
+        ...((path as DotEnvParseOptions) || {}),
       },
     };
     log("prepareParameters -> call(options): %o", final);
@@ -68,7 +82,10 @@ function prepareParameters(
  * @param options The parse-options.
  * @returns
  */
-export function parseString(content: string, options?: DotEnvParseOptions): ParseResult {
+export function parseString(
+  content: string,
+  options?: DotEnvParseOptions,
+): ParseResult {
   log("parseString(content: %p, options: %o)", content, options);
   parser.setOptions(options);
   return parser.parseString(content);
@@ -83,15 +100,24 @@ export function parse(path: string, options?: DotEnvParseOptions): ParseResult;
  * @param options The parse-options.
  * @returns
  */
-export function parse(path?: string | DotEnvParseOptions, options?: DotEnvParseOptions): ParseResult {
-  const {path: parsedPath, options: parsedOptions} = prepareParameters(path, options);
+export function parse(
+  path?: string | DotEnvParseOptions,
+  options?: DotEnvParseOptions,
+): ParseResult {
+  const { path: parsedPath, options: parsedOptions } = prepareParameters(
+    path,
+    options,
+  );
   log("parse(path: %s, options: %o)", parsedPath, parsedOptions);
   parser.setOptions(parsedOptions);
   return parser.parse(parsedPath);
 }
 
 export function values<D extends ParsedData>(options?: DotEnvParseOptions): D;
-export function values<D extends ParsedData>(path: string, options?: DotEnvParseOptions): D;
+export function values<D extends ParsedData>(
+  path: string,
+  options?: DotEnvParseOptions,
+): D;
 /**
  * Parses environment files and returns parsed data.
  * @param path Either the path to the file or the path to the folder
@@ -99,8 +125,14 @@ export function values<D extends ParsedData>(path: string, options?: DotEnvParse
  * @param options The parse-options.
  * @returns
  */
-export function values<D extends ParsedData>(path?: string | DotEnvParseOptions, options?: DotEnvParseOptions): D {
-  const {path: parsedPath, options: parsedOptions} = prepareParameters(path, options);
+export function values<D extends ParsedData>(
+  path?: string | DotEnvParseOptions,
+  options?: DotEnvParseOptions,
+): D {
+  const { path: parsedPath, options: parsedOptions } = prepareParameters(
+    path,
+    options,
+  );
   log("values(path: %s, options: %o)", parsedPath, parsedOptions);
   const parsed = parse(parsedPath, parsedOptions);
   return parsed.data as D;
@@ -115,12 +147,18 @@ export function load(path: string, options?: DotEnvParseOptions): void;
  * @param options The parse-options.
  * @returns
  */
-export function load(path?: string | DotEnvParseOptions, options?: DotEnvParseOptions): void {
-  const {path: parsedPath, options: parsedOptions} = prepareParameters(path, options);
+export function load(
+  path?: string | DotEnvParseOptions,
+  options?: DotEnvParseOptions,
+): void {
+  const { path: parsedPath, options: parsedOptions } = prepareParameters(
+    path,
+    options,
+  );
   log("load(path: %s, options: %o)", parsedPath, parsedOptions);
   const parsed = parse(parsedPath, parsedOptions);
   const interpolated = parser.getInterpolatedEnv(parsed.data, parsed.optional);
-  if (options.normalize) {
+  if (parsedOptions.normalize) {
     appendToProcessEnv(EnvFileParser.normalizeEnv(interpolated));
   } else {
     appendToProcessEnv(interpolated);

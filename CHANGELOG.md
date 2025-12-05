@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.1
+
+### Fixed
+
+- Fixed issue with missing options parameter in `load`
+
 ## 1.4.0
 
 ### Added

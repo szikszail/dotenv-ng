@@ -1,11 +1,17 @@
-import yargs = require("yargs/yargs");
+import yargs = require("yargs");
 import { execSync } from "child_process";
 import { statSync } from "fs";
-import {parse, ParseResult} from ".";
+import { parse, ParseResult } from ".";
 import parser, { DotEnvParseOptions } from "./parser";
 import debug from "./debug";
 
-import { INCORRECT_ENV_VARIABLE, MISSING_COMMAND, MISSING_SEPARATOR, MISSING_VARIABLE, NON_EXISTING_ENV_FILE_OR_FOLDER } from "./error";
+import {
+  INCORRECT_ENV_VARIABLE,
+  MISSING_COMMAND,
+  MISSING_SEPARATOR,
+  MISSING_VARIABLE,
+  NON_EXISTING_ENV_FILE_OR_FOLDER,
+} from "./error";
 const log = debug("dotenv-ng:cli");
 
 const SEPARATOR_RX = /^-{2,}$/;
@@ -18,78 +24,90 @@ export async function run(pipeIO = false): Promise<string> {
       return SEPARATOR;
     }
     return arg;
-  })
+  });
   log("process.argv (processed): %o", argv);
   const args = await yargs(argv)
     .options({
       load: {
         type: "string",
-        describe: "The path of the env-file or the folder containing the env-files.",
-        coerce: args => {
+        describe:
+          "The path of the env-file or the folder containing the env-files.",
+        coerce: (args) => {
           try {
             statSync(args);
             return args;
           } catch (e) {
             throw new Error(NON_EXISTING_ENV_FILE_OR_FOLDER + " " + args);
           }
-        }
+        },
       },
       environment: {
         type: "string",
-        describe: "The environment-specific env-file to be loaded, if a folder is processed.",
-        default: process.env.DOTENVNG_ENV ?? process.env.NODE_ENV
+        describe:
+          "The environment-specific env-file to be loaded, if a folder is processed.",
+        default: process.env.DOTENVNG_ENV ?? process.env.NODE_ENV,
       },
       "ignore-literal-case": {
         type: "boolean",
-        describe: "Should the casing of special literals (e.g. true, false, null, undefined, NaN) be ignored?",
-        default: true
+        describe:
+          "Should the casing of special literals (e.g. true, false, null, undefined, NaN) be ignored?",
+        default: true,
       },
       "parse-literals": {
         type: "boolean",
-        describe: "Should special literals be parsed as their JS values (e.g. true, false, null, undefined, NaN) or parsed as strings?",
-        default: true
+        describe:
+          "Should special literals be parsed as their JS values (e.g. true, false, null, undefined, NaN) or parsed as strings?",
+        default: true,
       },
       "parse-numbers": {
         type: "boolean",
-        describe: "Should number literals be parsed as numbers or parsed as strings?",
-        default: true
+        describe:
+          "Should number literals be parsed as numbers or parsed as strings?",
+        default: true,
       },
       "allow-empty-variables": {
         type: "boolean",
         describe: "Should empty variables (without a value set) be allowed?",
-        default: true
+        default: true,
       },
       "allow-orphan-keys": {
         type: "boolean",
-        describe: "Should orphan keys be allowed (line 24) or parsed as empty variables?",
-        default: false
+        describe:
+          "Should orphan keys be allowed (line 24) or parsed as empty variables?",
+        default: false,
       },
       "interpolation-enabled": {
         type: "boolean",
-        describe: "Should string interpolation be evaluated for other environment variables or handled as literal strings?",
-        default: true
+        describe:
+          "Should string interpolation be evaluated for other environment variables or handled as literal strings?",
+        default: true,
       },
       "overwrite-existing": {
         type: "boolean",
-        describe: "Should the existing environment variable values be overwritten?",
-        default: true
+        describe:
+          "Should the existing environment variable values be overwritten?",
+        default: true,
       },
-      "normalize": {
+      normalize: {
         type: "boolean",
-        describe: "Should the variable names be normalized (i.e. uppercase without white-space) and appended to the variables?",
-        default: false
+        describe:
+          "Should the variable names be normalized (i.e. uppercase without white-space) and appended to the variables?",
+        default: false,
       },
       var: {
         type: "string",
         array: true,
-        describe: "Case sensitive key=value pairs of the environment variables to be set."
-      }
+        describe:
+          "Case sensitive key=value pairs of the environment variables to be set.",
+      },
     })
     .usage("$0 [options] [--var KEY=value KEY=value ...] -- command")
-    .epilogue("- Either --load or one or more --var must be specified.\n" +
-      "- All boolean attributes have a --no version to set them to false, e.g. --no-overwrite-existing.\n" +
-      "- When a quoted argument is passed to the command itself, then the whole command must be quoted.")
-    .check(argv => {
+    .epilogue(
+      "- Either --load or one or more --var must be specified.\n" +
+        "- All boolean attributes have a --no version to set them to false, e.g. --no-overwrite-existing.\n" +
+        "- When a quoted argument is passed to the command itself, then the whole command must be quoted.",
+    )
+    .check((argv) => {
       if (!process.argv.some((arg) => SEPARATOR_RX.test(arg))) {
         throw new Error(MISSING_SEPARATOR);
       }
@@ -110,8 +128,7 @@ export async function run(pipeIO = false): Promise<string> {
       return true;
     })
     .help()
-    .fail(false)
-    .argv;
+    .fail(false).argv;
 
   log("argv: %k", args);
 
@@ -129,7 +146,7 @@ export async function run(pipeIO = false): Promise<string> {
   log("parseOptions: %O", options);
   parser.setOptions(options);
 
-  let envValues: ParseResult = { data: {}, optional: [], errors: []};
+  let envValues: ParseResult = { data: {}, optional: [], errors: [] };
   if (args.load) {
     envValues = parse(args.load, options);
   }
@@ -142,7 +159,10 @@ export async function run(pipeIO = false): Promise<string> {
     }
   }
   log("parsed: %k", envValues);
-  const processedEnvValues = parser.getInterpolatedEnv(envValues.data, envValues.optional);
+  const processedEnvValues = parser.getInterpolatedEnv(
+    envValues.data,
+    envValues.optional,
+  );
   log("processed: %k", processedEnvValues);
   log("command: `%s`", args._.join(" "));
   const r = execSync(args._.join(" "), {
