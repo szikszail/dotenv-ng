@@ -38,7 +38,7 @@ describe("dotenv-ng", () => {
       },
       errors: [
         { line: 24, error: "ORPHAN_KEY", data: "THIS_WILL_BE_IGNORED" },
-        { line: 25, error: "MISSING_KEY", data: '="this as well."' },
+        { line: 25, error: "MISSING_KEY", data: "=\"this as well.\"" },
       ],
       optional: [],
     });
@@ -75,7 +75,7 @@ describe("dotenv-ng", () => {
       },
       errors: [
         { line: 24, error: "ORPHAN_KEY", data: "THIS_WILL_BE_IGNORED" },
-        { line: 25, error: "MISSING_KEY", data: '="this as well."' },
+        { line: 25, error: "MISSING_KEY", data: "=\"this as well.\"" },
       ],
       optional: [],
     });
@@ -111,7 +111,7 @@ describe("dotenv-ng", () => {
       },
       errors: [
         { line: 24, error: "ORPHAN_KEY", data: "THIS_WILL_BE_IGNORED" },
-        { line: 25, error: "MISSING_KEY", data: '="this as well."' },
+        { line: 25, error: "MISSING_KEY", data: "=\"this as well.\"" },
       ],
       optional: [],
     });
@@ -143,7 +143,7 @@ describe("dotenv-ng", () => {
       },
       errors: [
         { line: 24, error: "ORPHAN_KEY", data: "THIS_WILL_BE_IGNORED" },
-        { line: 25, error: "MISSING_KEY", data: '="this as well."' },
+        { line: 25, error: "MISSING_KEY", data: "=\"this as well.\"" },
       ],
       optional: [],
     });
@@ -178,7 +178,7 @@ describe("dotenv-ng", () => {
         THIS_WILL_BE_IGNORED: "",
         FILE: ".env",
       },
-      errors: [{ line: 25, error: "MISSING_KEY", data: '="this as well."' }],
+      errors: [{ line: 25, error: "MISSING_KEY", data: "=\"this as well.\"" }],
       optional: [],
     });
   });
@@ -212,7 +212,7 @@ describe("dotenv-ng", () => {
       },
       errors: [
         { line: 24, error: "ORPHAN_KEY", data: "THIS_WILL_BE_IGNORED" },
-        { line: 25, error: "MISSING_KEY", data: '="this as well."' },
+        { line: 25, error: "MISSING_KEY", data: "=\"this as well.\"" },
         { line: 27, error: "EMPTY_VARIABLE", data: "EMPTY_VARIABLE=" },
       ],
       optional: [],
@@ -249,7 +249,7 @@ describe("dotenv-ng", () => {
       },
       errors: [
         { line: 24, error: "ORPHAN_KEY", data: "THIS_WILL_BE_IGNORED" },
-        { line: 25, error: "MISSING_KEY", data: '="this as well."' },
+        { line: 25, error: "MISSING_KEY", data: "=\"this as well.\"" },
       ],
       optional: [],
     });
@@ -285,7 +285,7 @@ describe("dotenv-ng", () => {
       },
       errors: [
         { line: 24, error: "ORPHAN_KEY", data: "THIS_WILL_BE_IGNORED" },
-        { line: 25, error: "MISSING_KEY", data: '="this as well."' },
+        { line: 25, error: "MISSING_KEY", data: "=\"this as well.\"" },
       ],
       optional: [],
     });
@@ -322,7 +322,7 @@ describe("dotenv-ng", () => {
       },
       errors: [
         { line: 24, error: "ORPHAN_KEY", data: "THIS_WILL_BE_IGNORED" },
-        { line: 25, error: "MISSING_KEY", data: '="this as well."' },
+        { line: 25, error: "MISSING_KEY", data: "=\"this as well.\"" },
       ],
       optional: [],
     });
@@ -360,7 +360,7 @@ describe("dotenv-ng", () => {
       },
       errors: [
         { line: 24, error: "ORPHAN_KEY", data: "THIS_WILL_BE_IGNORED" },
-        { line: 25, error: "MISSING_KEY", data: '="this as well."' },
+        { line: 25, error: "MISSING_KEY", data: "=\"this as well.\"" },
       ],
       optional: ["DOES_NOT_EXIST_YET", "FILE"],
     });

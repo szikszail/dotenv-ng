@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 import yargs = require("yargs");
 import { execSync } from "child_process";
 import { statSync } from "fs";
@@ -36,7 +37,7 @@ export async function run(pipeIO = false): Promise<string> {
           try {
             statSync(args);
             return args;
-          } catch (e) {
+          } catch {
             throw new Error(NON_EXISTING_ENV_FILE_OR_FOLDER + " " + args);
           }
         },
